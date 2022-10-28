@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "pusher-vue"
+		},
+		{
+			"path": "pusher-backend"
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "pusher-vue"
+	}
+}

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./index.css">
+</head>
+<body>
+    <main id="app" v-cloak>
+        <div class="subscribe-container" v-show="stage=='subscribe'">
+            <header>
+                Select A Channel
+            </header>
+            <div class="subscribe-items">
+                <div class="subscribe-item" v-for="(v, name) in channels" :class="{selected: currentChannel==name}" @click="currentChannel=name">
+                    <span>{{name}}</span>
+                    <small>Online: 24</small>
+                </div>
+            </div>
+            <input type="text" v-model="username" :placeholder="usernamePlaceholder">
+            <button :class="{disabled: !username || !currentChannel}" @click="openChannel">Proceed</button>
+        </div>
+
+        <div class="chats-container" v-show="stage=='chat'">
+            <header>
+                <span>{{currentChannel}}</span>
+                <small>
+                    <ins></ins> 24 
+                </small>
+
+                <button>EXIT</button>
+            </header>
+
+            <div class="chats-box">
+                <div class="chat-item" 
+                    v-for="({sender, message, timestamp, type, dateTime}, i) in messages" 
+                    :class="{out: type=='outgoing', selected: selectedMessageTimestamp==timestamp}"
+                    @click="selectedMessageTimestamp=timestamp"
+                >
+                    <div class="chat-item-content">
+                        <div class="username">{{sender}}</div>
+                        <span class="chat-message">{{message}}</span>
+                    </div>
+                    <span class="timestamp">
+                        <small v-for="item in dateTime">
+                            {{item}}
+                        </small>
+                    </span>
+                </div>
+            </div>
+
+            <footer>
+                <input type="text" placeholder="Type a message" v-model="message" id="message">
+                <button id="send" @click="sendMessage">Send</button>
+            </footer>
+        </div>
+    </main>
+</body>
+<!-- axios url -->
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script src="https://js.pusher.com/7.2/pusher.min.js"></script>
+<script src="./index.mjs" type="module"></script>
+</html>
