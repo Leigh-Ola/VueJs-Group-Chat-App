@@ -1,6 +1,6 @@
 # Implementing speedy group chat functionality with Pusher and Vue.
 
-{% details What is Pusher? %} [Pusher](https://www.pusher.com) is a tool that enables you to build scalabe real-time communication. Fast. {% enddetails %}
+{% details What is Pusher? %} [Pusher](https://www.pusher.com) is a tool that enables you to build scalable real-time communication. Fast. {% enddetails %}
 
 ## Table Of Contents
   * [Features](#features)
@@ -9,7 +9,7 @@
     * [Creating a pusher channel](#creating-pusher-channel) 
     * [Getting your App Keys](#get-app-keys) 
     * [Enabling subscription counting](#subscription-counting) 
-  * [Setting up NodeJs Backend](#nodejs-setup)
+  * [Setting up NodeJS Backend](#nodejs-setup)
     * [Packages](#packages) 
     * [Adding your App Keys](#add-app-keys) 
     * [Creating an Express server](#create-server) 
@@ -19,27 +19,27 @@
       * [Opening a channel](#open-channel) 
     * [Sending messages](#sending-messages) 
     * [Disconnecting from a channel](#disconnecting) 
-    * [Creating and styling html](#html-and-css) 
+    * [Creating and styling HTML](#HTML-and-css) 
   * [Results](#results) 
 
 ## Features <a name="features"></a>
 
 In this tutorial, We will use Pusher & Vue to build a very simple chat app that enables fast, real-time group messaging across multiple users.
 
-Users will be able to crate a username, join a group, and send and receive messages to/from all other online users in the group.
+Users will be able to create a username, join a group, and send and receive messages to/from all other online users in the group.
 
-This app will have it's backend built with Nodejs and Express, and it's frontend built with Pusher and Vue.
+This app will have its backend built with NodeJS and Express, and its frontend built with Pusher and Vue.
 
 ## Requirements <a name="requirements"></a>
 You will need:
-- Basic [NodeJs](https://nodejs.org) experience
+- Basic [NodeJS](https://nodejs.org) experience
 - Basic [Vue](https://vuejs.org) experience
 - A Pusher account. More on that in the next section.
 
 ## Setting up Pusher <a name="setting-up-pusher"></a>
-### Step 1: Creating a a Pusher Channel <a name="creating-pusher-channel"></a>
-- [Sign up](https://dashboard.pusher.com/accounts/sign_up) for a Pusher cccount.
-- Next, head over to [Channels](https://dashboard.pusher.com/channels) and click on "Create App".
+### Step 1: Creating a Pusher Channel <a name="creating-pusher-channel"></a>
+- [Sign up](https://dashboard.pusher.com/accounts/sign_up) for a Pusher account.
+- Next, head over to [channels](https://dashboard.pusher.com/channels) and click on "Create App".
 - Provide the following information:
   - **App Name**:  This will be the name of the app on your pusher dashboard.
   - **Cluster**: This is the location of the servers that will handle requests from your app. Choose a location nearest to you.
@@ -62,7 +62,7 @@ Here's how to enable this feature:
 - Scroll down and toggle the switches to **Enable subscription counting** and **Enable subscription count events in channels**
 ![Toggle On Subscription Counting - Screenshot](./img/subscription-counting.png)
 
-## Setting up the NodeJs backend <a name="nodejs-setup"></a>
+## Setting up the NodeJS backend <a name="nodejs-setup"></a>
 ### Step 1: Install packages <a name="packages"></a>
 Run the following command to install the dependencies we'll need
 ```cmd
@@ -100,7 +100,7 @@ app.listen(port, () => {
 ```
 This sets up a basic express http server and fetches the environment variables
 ### Step 4: Messaging with Pusher <a name="handling-messages-with-pusher"></a>
-Connect to your pusher app adding the below snippet to your `app.js`:
+Add the below snippet to your `app.js` to connect to your Pusher app:
 ```javascript
 // Setup Pusher
 const pusher = new Pusher({
@@ -139,11 +139,11 @@ Finally, open up your terminal and run:
 ```cmd
 node app.js
 ```
-> Thats all for NodeJs!
+> Thats all for NodeJS!
 
 ## Setting up the Vue frontend <a name="vue-setup"></a>
 Next, create a `/public` in your server directory and in it, create the following files:
-- `index.html`
+- `index.HTML`
 - `index.css`
 - `index.js`
 ### Creating a Vue instance and connecting to Pusher <a name="instantiating"></a>
@@ -245,14 +245,14 @@ function connectToPusher() {
 ```
 
 {% details That's a lot of code. Here's a summary: %} 
-- First, we instantiate vue:
+- First, we instantiate Vue:
   ```javascript
   let app = new Vue({
   el: "#app",
     // vue instance options...
   });
   ```
-- Next we create a function to instantiate Pusher:
+- Next, we create a function to instantiate Pusher:
 ```javascript
   function connectToPusher() {
     // instantiate Pusher
@@ -264,7 +264,7 @@ function connectToPusher() {
   This connects the Pusher client to our Pusher app instance.
 
   Remember to change `PusherAppKey` and `PusherAppCluster` to match your own [Pusher app key values](#get-app-keys).
-- Then we setup a beforeMount hook to:
+- Then we set up a beforeMount hook to:
 ```javascript
   beforeMount(){
     // Generate unique user id
@@ -285,7 +285,7 @@ The content of the `openChannel()` method is especially important, so let's go t
 ```javascript
   channel = pusher.subscribe(channelId);
 ```
-- Then we bind a function to listen for `message-in` events on that channel. This function gets triggered everytime there's a new message on the channel. It then adds the message data to our vue instance.
+- Then we bind a function to listen for `message-in` events on that channel. This function gets triggered every time there's a new message on the channel. It then adds the message data to our Vue instance.
 ```javascript
   channel.bind("message-in", (data) => {
     /* some other code */
@@ -299,7 +299,7 @@ channel.bind("pusher:subscription_count", (data) => {
       this.onlineUsersCount = data.subscription_count;
 });
 ```
-This event will allow us to show how many users are online in a channel at any given time.
+This event allows us to show how many users are online in a channel at any given time.
 {% enddetails %}
 
 ### Sending Messages <a name="sending-messages"></a>
@@ -341,7 +341,7 @@ let data = {
 // 
 }
 ```
-- Then we sent the data to our NodeJs server via a POST request to the `/message` endpoint:
+- Then we sent the data to our NodeJS server via a POST request to the `/message` endpoint:
 ```javascript
 fetch("/message", {
   method: "POST",
@@ -366,11 +366,11 @@ disconnect() {
 ```
 This will disconnect from the current channel, clear all the data on our Vue instance related to that channel, and return the user to the group selection menu.
 
-### Creating and styling our html  <a name="html-and-css"></a>
+### Creating and styling our HTML  <a name="HTML-and-css"></a>
 Go to the `index.js` file and paste this snippet:
-```html
-<!DOCTYPE html>
-<html lang="en">
+```HTML
+<!DOCTYPE HTML>
+<HTML lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -436,7 +436,7 @@ Go to the `index.js` file and paste this snippet:
 <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
 <!--  -->
 <script src="./index.js"></script>
-</html>
+</HTML>
 ```
 Finally, it's time to style our page. Open up your `index.css` file and insert this:
 ```css
@@ -805,6 +805,6 @@ body {
 ## Conclusion
 This article has taken you through the basic steps required to create a fast, scalable, real-time group-chat application with Vue and Pusher. 
 
-Check out the [project repo on GitHub](). Feel free to fork and contribute.
+Check out the [project repo on GitHub](https://github.com/Leigh-Ola/group-chat-app). Feel free to fork and contribute.
 
 👋

@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Implementing speedy group chat functionality with Pusher and Vue&period;</title>
+        <style>
+/* From extension vscode.github */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.vscode-dark img[src$=\#gh-light-mode-only],
+.vscode-light img[src$=\#gh-dark-mode-only] {
+	display: none;
+}
+
+/* From extension vscode.markdown-math */
+@font-face{font-family:KaTeX_AMS;font-style:normal;font-weight:400;src:url(fonts/KaTeX_AMS-Regular.woff2) format("woff2"),url(fonts/KaTeX_AMS-Regular.woff) format("woff"),url(fonts/KaTeX_AMS-Regular.ttf) format("truetype")}@font-face{font-family:KaTeX_Caligraphic;font-style:normal;font-weight:700;src:url(fonts/KaTeX_Caligraphic-Bold.woff2) format("woff2"),url(fonts/KaTeX_Caligraphic-Bold.woff) format("woff"),url(fonts/KaTeX_Caligraphic-Bold.ttf) format("truetype")}@font-face{font-family:KaTeX_Caligraphic;font-style:normal;font-weight:400;src:url(fonts/KaTeX_Caligraphic-Regular.woff2) format("woff2"),url(fonts/KaTeX_Caligraphic-Regular.woff) format("woff"),url(fonts/KaTeX_Caligraphic-Regular.ttf) format("truetype")}@font-face{font-family:KaTeX_Fraktur;font-style:normal;font-weight:700;src:url(fonts/KaTeX_Fraktur-Bold.woff2) format("woff2"),url(fonts/KaTeX_Fraktur-Bold.woff) format("woff"),url(fonts/KaTeX_Fraktur-Bold.ttf) format("truetype")}@font-face{font-family:KaTeX_Fraktur;font-style:normal;font-weight:400;src:url(fonts/KaTeX_Fraktur-Regular.woff2) format("woff2"),url(fonts/KaTeX_Fraktur-Regular.woff) format("woff"),url(fonts/KaTeX_Fraktur-Regular.ttf) format("truetype")}@font-face{font-family:KaTeX_Main;font-style:normal;font-weight:700;src:url(fonts/KaTeX_Main-Bold.woff2) format("woff2"),url(fonts/KaTeX_Main-Bold.woff) format("woff"),url(fonts/KaTeX_Main-Bold.ttf) format("truetype")}@font-face{font-family:KaTeX_Main;font-style:italic;font-weight:700;src:url(fonts/KaTeX_Main-BoldItalic.woff2) format("woff2"),url(fonts/KaTeX_Main-BoldItalic.woff) format("woff"),url(fonts/KaTeX_Main-BoldItalic.ttf) format("truetype")}@font-face{font-family:KaTeX_Main;font-style:italic;font-weight:400;src:url(fonts/KaTeX_Main-Italic.woff2) format("woff2"),url(fonts/KaTeX_Main-Italic.woff) format("woff"),url(fonts/KaTeX_Main-Italic.ttf) format("truetype")}@font-face{font-family:KaTeX_Main;font-style:normal;font-weight:400;src:url(fonts/KaTeX_Main-Regular.woff2) format("woff2"),url(fonts/KaTeX_Main-Regular.woff) format("woff"),url(fonts/KaTeX_Main-Regular.ttf) format("truetype")}@font-face{font-family:KaTeX_Math;font-style:italic;font-weight:700;src:url(fonts/KaTeX_Math-BoldItalic.woff2) format("woff2"),url(fonts/KaTeX_Math-BoldItalic.woff) format("woff"),url(fonts/KaTeX_Math-BoldItalic.ttf) format("truetype")}@font-face{font-family:KaTeX_Math;font-style:italic;font-weight:400;src:url(fonts/KaTeX_Math-Italic.woff2) format("woff2"),url(fonts/KaTeX_Math-Italic.woff) format("woff"),url(fonts/KaTeX_Math-Italic.ttf) format("truetype")}@font-face{font-family:"KaTeX_SansSerif";font-style:normal;font-weight:700;src:url(fonts/KaTeX_SansSerif-Bold.woff2) format("woff2"),url(fonts/KaTeX_SansSerif-Bold.woff) format("woff"),url(fonts/KaTeX_SansSerif-Bold.ttf) format("truetype")}@font-face{font-family:"KaTeX_SansSerif";font-style:italic;font-weight:400;src:url(fonts/KaTeX_SansSerif-Italic.woff2) format("woff2"),url(fonts/KaTeX_SansSerif-Italic.woff) format("woff"),url(fonts/KaTeX_SansSerif-Italic.ttf) format("truetype")}@font-face{font-family:"KaTeX_SansSerif";font-style:normal;font-weight:400;src:url(fonts/KaTeX_SansSerif-Regular.woff2) format("woff2"),url(fonts/KaTeX_SansSerif-Regular.woff) format("woff"),url(fonts/KaTeX_SansSerif-Regular.ttf) format("truetype")}@font-face{font-family:KaTeX_Script;font-style:normal;font-weight:400;src:url(fonts/KaTeX_Script-Regular.woff2) format("woff2"),url(fonts/KaTeX_Script-Regular.woff) format("woff"),url(fonts/KaTeX_Script-Regular.ttf) format("truetype")}@font-face{font-family:KaTeX_Size1;font-style:normal;font-weight:400;src:url(fonts/KaTeX_Size1-Regular.woff2) format("woff2"),url(fonts/KaTeX_Size1-Regular.woff) format("woff"),url(fonts/KaTeX_Size1-Regular.ttf) format("truetype")}@font-face{font-family:KaTeX_Size2;font-style:normal;font-weight:400;src:url(fonts/KaTeX_Size2-Regular.woff2) format("woff2"),url(fonts/KaTeX_Size2-Regular.woff) format("woff"),url(fonts/KaTeX_Size2-Regular.ttf) format("truetype")}@font-face{font-family:KaTeX_Size3;font-style:normal;font-weight:400;src:url(fonts/KaTeX_Size3-Regular.woff2) format("woff2"),url(fonts/KaTeX_Size3-Regular.woff) format("woff"),url(fonts/KaTeX_Size3-Regular.ttf) format("truetype")}@font-face{font-family:KaTeX_Size4;font-style:normal;font-weight:400;src:url(fonts/KaTeX_Size4-Regular.woff2) format("woff2"),url(fonts/KaTeX_Size4-Regular.woff) format("woff"),url(fonts/KaTeX_Size4-Regular.ttf) format("truetype")}@font-face{font-family:KaTeX_Typewriter;font-style:normal;font-weight:400;src:url(fonts/KaTeX_Typewriter-Regular.woff2) format("woff2"),url(fonts/KaTeX_Typewriter-Regular.woff) format("woff"),url(fonts/KaTeX_Typewriter-Regular.ttf) format("truetype")}.katex{text-rendering:auto;font:normal 1.21em KaTeX_Main,Times New Roman,serif;line-height:1.2;text-indent:0}.katex *{-ms-high-contrast-adjust:none!important;border-color:currentColor}.katex .katex-version:after{content:"0.13.24"}.katex .katex-mathml{clip:rect(1px,1px,1px,1px);border:0;height:1px;overflow:hidden;padding:0;position:absolute;width:1px}.katex .katex-html>.newline{display:block}.katex .base{position:relative;white-space:nowrap;width:-webkit-min-content;width:-moz-min-content;width:min-content}.katex .base,.katex .strut{display:inline-block}.katex .textbf{font-weight:700}.katex .textit{font-style:italic}.katex .textrm{font-family:KaTeX_Main}.katex .textsf{font-family:KaTeX_SansSerif}.katex .texttt{font-family:KaTeX_Typewriter}.katex .mathnormal{font-family:KaTeX_Math;font-style:italic}.katex .mathit{font-family:KaTeX_Main;font-style:italic}.katex .mathrm{font-style:normal}.katex .mathbf{font-family:KaTeX_Main;font-weight:700}.katex .boldsymbol{font-family:KaTeX_Math;font-style:italic;font-weight:700}.katex .amsrm,.katex .mathbb,.katex .textbb{font-family:KaTeX_AMS}.katex .mathcal{font-family:KaTeX_Caligraphic}.katex .mathfrak,.katex .textfrak{font-family:KaTeX_Fraktur}.katex .mathtt{font-family:KaTeX_Typewriter}.katex .mathscr,.katex .textscr{font-family:KaTeX_Script}.katex .mathsf,.katex .textsf{font-family:KaTeX_SansSerif}.katex .mathboldsf,.katex .textboldsf{font-family:KaTeX_SansSerif;font-weight:700}.katex .mathitsf,.katex .textitsf{font-family:KaTeX_SansSerif;font-style:italic}.katex .mainrm{font-family:KaTeX_Main;font-style:normal}.katex .vlist-t{border-collapse:collapse;display:inline-table;table-layout:fixed}.katex .vlist-r{display:table-row}.katex .vlist{display:table-cell;position:relative;vertical-align:bottom}.katex .vlist>span{display:block;height:0;position:relative}.katex .vlist>span>span{display:inline-block}.katex .vlist>span>.pstrut{overflow:hidden;width:0}.katex .vlist-t2{margin-right:-2px}.katex .vlist-s{display:table-cell;font-size:1px;min-width:2px;vertical-align:bottom;width:2px}.katex .vbox{align-items:baseline;display:inline-flex;flex-direction:column}.katex .hbox{width:100%}.katex .hbox,.katex .thinbox{display:inline-flex;flex-direction:row}.katex .thinbox{max-width:0;width:0}.katex .msupsub{text-align:left}.katex .mfrac>span>span{text-align:center}.katex .mfrac .frac-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .hdashline,.katex .hline,.katex .mfrac .frac-line,.katex .overline .overline-line,.katex .rule,.katex .underline .underline-line{min-height:1px}.katex .mspace{display:inline-block}.katex .clap,.katex .llap,.katex .rlap{position:relative;width:0}.katex .clap>.inner,.katex .llap>.inner,.katex .rlap>.inner{position:absolute}.katex .clap>.fix,.katex .llap>.fix,.katex .rlap>.fix{display:inline-block}.katex .llap>.inner{right:0}.katex .clap>.inner,.katex .rlap>.inner{left:0}.katex .clap>.inner>span{margin-left:-50%;margin-right:50%}.katex .rule{border:0 solid;display:inline-block;position:relative}.katex .hline,.katex .overline .overline-line,.katex .underline .underline-line{border-bottom-style:solid;display:inline-block;width:100%}.katex .hdashline{border-bottom-style:dashed;display:inline-block;width:100%}.katex .sqrt>.root{margin-left:.27777778em;margin-right:-.55555556em}.katex .fontsize-ensurer.reset-size1.size1,.katex .sizing.reset-size1.size1{font-size:1em}.katex .fontsize-ensurer.reset-size1.size2,.katex .sizing.reset-size1.size2{font-size:1.2em}.katex .fontsize-ensurer.reset-size1.size3,.katex .sizing.reset-size1.size3{font-size:1.4em}.katex .fontsize-ensurer.reset-size1.size4,.katex .sizing.reset-size1.size4{font-size:1.6em}.katex .fontsize-ensurer.reset-size1.size5,.katex .sizing.reset-size1.size5{font-size:1.8em}.katex .fontsize-ensurer.reset-size1.size6,.katex .sizing.reset-size1.size6{font-size:2em}.katex .fontsize-ensurer.reset-size1.size7,.katex .sizing.reset-size1.size7{font-size:2.4em}.katex .fontsize-ensurer.reset-size1.size8,.katex .sizing.reset-size1.size8{font-size:2.88em}.katex .fontsize-ensurer.reset-size1.size9,.katex .sizing.reset-size1.size9{font-size:3.456em}.katex .fontsize-ensurer.reset-size1.size10,.katex .sizing.reset-size1.size10{font-size:4.148em}.katex .fontsize-ensurer.reset-size1.size11,.katex .sizing.reset-size1.size11{font-size:4.976em}.katex .fontsize-ensurer.reset-size2.size1,.katex .sizing.reset-size2.size1{font-size:.83333333em}.katex .fontsize-ensurer.reset-size2.size2,.katex .sizing.reset-size2.size2{font-size:1em}.katex .fontsize-ensurer.reset-size2.size3,.katex .sizing.reset-size2.size3{font-size:1.16666667em}.katex .fontsize-ensurer.reset-size2.size4,.katex .sizing.reset-size2.size4{font-size:1.33333333em}.katex .fontsize-ensurer.reset-size2.size5,.katex .sizing.reset-size2.size5{font-size:1.5em}.katex .fontsize-ensurer.reset-size2.size6,.katex .sizing.reset-size2.size6{font-size:1.66666667em}.katex .fontsize-ensurer.reset-size2.size7,.katex .sizing.reset-size2.size7{font-size:2em}.katex .fontsize-ensurer.reset-size2.size8,.katex .sizing.reset-size2.size8{font-size:2.4em}.katex .fontsize-ensurer.reset-size2.size9,.katex .sizing.reset-size2.size9{font-size:2.88em}.katex .fontsize-ensurer.reset-size2.size10,.katex .sizing.reset-size2.size10{font-size:3.45666667em}.katex .fontsize-ensurer.reset-size2.size11,.katex .sizing.reset-size2.size11{font-size:4.14666667em}.katex .fontsize-ensurer.reset-size3.size1,.katex .sizing.reset-size3.size1{font-size:.71428571em}.katex .fontsize-ensurer.reset-size3.size2,.katex .sizing.reset-size3.size2{font-size:.85714286em}.katex .fontsize-ensurer.reset-size3.size3,.katex .sizing.reset-size3.size3{font-size:1em}.katex .fontsize-ensurer.reset-size3.size4,.katex .sizing.reset-size3.size4{font-size:1.14285714em}.katex .fontsize-ensurer.reset-size3.size5,.katex .sizing.reset-size3.size5{font-size:1.28571429em}.katex .fontsize-ensurer.reset-size3.size6,.katex .sizing.reset-size3.size6{font-size:1.42857143em}.katex .fontsize-ensurer.reset-size3.size7,.katex .sizing.reset-size3.size7{font-size:1.71428571em}.katex .fontsize-ensurer.reset-size3.size8,.katex .sizing.reset-size3.size8{font-size:2.05714286em}.katex .fontsize-ensurer.reset-size3.size9,.katex .sizing.reset-size3.size9{font-size:2.46857143em}.katex .fontsize-ensurer.reset-size3.size10,.katex .sizing.reset-size3.size10{font-size:2.96285714em}.katex .fontsize-ensurer.reset-size3.size11,.katex .sizing.reset-size3.size11{font-size:3.55428571em}.katex .fontsize-ensurer.reset-size4.size1,.katex .sizing.reset-size4.size1{font-size:.625em}.katex .fontsize-ensurer.reset-size4.size2,.katex .sizing.reset-size4.size2{font-size:.75em}.katex .fontsize-ensurer.reset-size4.size3,.katex .sizing.reset-size4.size3{font-size:.875em}.katex .fontsize-ensurer.reset-size4.size4,.katex .sizing.reset-size4.size4{font-size:1em}.katex .fontsize-ensurer.reset-size4.size5,.katex .sizing.reset-size4.size5{font-size:1.125em}.katex .fontsize-ensurer.reset-size4.size6,.katex .sizing.reset-size4.size6{font-size:1.25em}.katex .fontsize-ensurer.reset-size4.size7,.katex .sizing.reset-size4.size7{font-size:1.5em}.katex .fontsize-ensurer.reset-size4.size8,.katex .sizing.reset-size4.size8{font-size:1.8em}.katex .fontsize-ensurer.reset-size4.size9,.katex .sizing.reset-size4.size9{font-size:2.16em}.katex .fontsize-ensurer.reset-size4.size10,.katex .sizing.reset-size4.size10{font-size:2.5925em}.katex .fontsize-ensurer.reset-size4.size11,.katex .sizing.reset-size4.size11{font-size:3.11em}.katex .fontsize-ensurer.reset-size5.size1,.katex .sizing.reset-size5.size1{font-size:.55555556em}.katex .fontsize-ensurer.reset-size5.size2,.katex .sizing.reset-size5.size2{font-size:.66666667em}.katex .fontsize-ensurer.reset-size5.size3,.katex .sizing.reset-size5.size3{font-size:.77777778em}.katex .fontsize-ensurer.reset-size5.size4,.katex .sizing.reset-size5.size4{font-size:.88888889em}.katex .fontsize-ensurer.reset-size5.size5,.katex .sizing.reset-size5.size5{font-size:1em}.katex .fontsize-ensurer.reset-size5.size6,.katex .sizing.reset-size5.size6{font-size:1.11111111em}.katex .fontsize-ensurer.reset-size5.size7,.katex .sizing.reset-size5.size7{font-size:1.33333333em}.katex .fontsize-ensurer.reset-size5.size8,.katex .sizing.reset-size5.size8{font-size:1.6em}.katex .fontsize-ensurer.reset-size5.size9,.katex .sizing.reset-size5.size9{font-size:1.92em}.katex .fontsize-ensurer.reset-size5.size10,.katex .sizing.reset-size5.size10{font-size:2.30444444em}.katex .fontsize-ensurer.reset-size5.size11,.katex .sizing.reset-size5.size11{font-size:2.76444444em}.katex .fontsize-ensurer.reset-size6.size1,.katex .sizing.reset-size6.size1{font-size:.5em}.katex .fontsize-ensurer.reset-size6.size2,.katex .sizing.reset-size6.size2{font-size:.6em}.katex .fontsize-ensurer.reset-size6.size3,.katex .sizing.reset-size6.size3{font-size:.7em}.katex .fontsize-ensurer.reset-size6.size4,.katex .sizing.reset-size6.size4{font-size:.8em}.katex .fontsize-ensurer.reset-size6.size5,.katex .sizing.reset-size6.size5{font-size:.9em}.katex .fontsize-ensurer.reset-size6.size6,.katex .sizing.reset-size6.size6{font-size:1em}.katex .fontsize-ensurer.reset-size6.size7,.katex .sizing.reset-size6.size7{font-size:1.2em}.katex .fontsize-ensurer.reset-size6.size8,.katex .sizing.reset-size6.size8{font-size:1.44em}.katex .fontsize-ensurer.reset-size6.size9,.katex .sizing.reset-size6.size9{font-size:1.728em}.katex .fontsize-ensurer.reset-size6.size10,.katex .sizing.reset-size6.size10{font-size:2.074em}.katex .fontsize-ensurer.reset-size6.size11,.katex .sizing.reset-size6.size11{font-size:2.488em}.katex .fontsize-ensurer.reset-size7.size1,.katex .sizing.reset-size7.size1{font-size:.41666667em}.katex .fontsize-ensurer.reset-size7.size2,.katex .sizing.reset-size7.size2{font-size:.5em}.katex .fontsize-ensurer.reset-size7.size3,.katex .sizing.reset-size7.size3{font-size:.58333333em}.katex .fontsize-ensurer.reset-size7.size4,.katex .sizing.reset-size7.size4{font-size:.66666667em}.katex .fontsize-ensurer.reset-size7.size5,.katex .sizing.reset-size7.size5{font-size:.75em}.katex .fontsize-ensurer.reset-size7.size6,.katex .sizing.reset-size7.size6{font-size:.83333333em}.katex .fontsize-ensurer.reset-size7.size7,.katex .sizing.reset-size7.size7{font-size:1em}.katex .fontsize-ensurer.reset-size7.size8,.katex .sizing.reset-size7.size8{font-size:1.2em}.katex .fontsize-ensurer.reset-size7.size9,.katex .sizing.reset-size7.size9{font-size:1.44em}.katex .fontsize-ensurer.reset-size7.size10,.katex .sizing.reset-size7.size10{font-size:1.72833333em}.katex .fontsize-ensurer.reset-size7.size11,.katex .sizing.reset-size7.size11{font-size:2.07333333em}.katex .fontsize-ensurer.reset-size8.size1,.katex .sizing.reset-size8.size1{font-size:.34722222em}.katex .fontsize-ensurer.reset-size8.size2,.katex .sizing.reset-size8.size2{font-size:.41666667em}.katex .fontsize-ensurer.reset-size8.size3,.katex .sizing.reset-size8.size3{font-size:.48611111em}.katex .fontsize-ensurer.reset-size8.size4,.katex .sizing.reset-size8.size4{font-size:.55555556em}.katex .fontsize-ensurer.reset-size8.size5,.katex .sizing.reset-size8.size5{font-size:.625em}.katex .fontsize-ensurer.reset-size8.size6,.katex .sizing.reset-size8.size6{font-size:.69444444em}.katex .fontsize-ensurer.reset-size8.size7,.katex .sizing.reset-size8.size7{font-size:.83333333em}.katex .fontsize-ensurer.reset-size8.size8,.katex .sizing.reset-size8.size8{font-size:1em}.katex .fontsize-ensurer.reset-size8.size9,.katex .sizing.reset-size8.size9{font-size:1.2em}.katex .fontsize-ensurer.reset-size8.size10,.katex .sizing.reset-size8.size10{font-size:1.44027778em}.katex .fontsize-ensurer.reset-size8.size11,.katex .sizing.reset-size8.size11{font-size:1.72777778em}.katex .fontsize-ensurer.reset-size9.size1,.katex .sizing.reset-size9.size1{font-size:.28935185em}.katex .fontsize-ensurer.reset-size9.size2,.katex .sizing.reset-size9.size2{font-size:.34722222em}.katex .fontsize-ensurer.reset-size9.size3,.katex .sizing.reset-size9.size3{font-size:.40509259em}.katex .fontsize-ensurer.reset-size9.size4,.katex .sizing.reset-size9.size4{font-size:.46296296em}.katex .fontsize-ensurer.reset-size9.size5,.katex .sizing.reset-size9.size5{font-size:.52083333em}.katex .fontsize-ensurer.reset-size9.size6,.katex .sizing.reset-size9.size6{font-size:.5787037em}.katex .fontsize-ensurer.reset-size9.size7,.katex .sizing.reset-size9.size7{font-size:.69444444em}.katex .fontsize-ensurer.reset-size9.size8,.katex .sizing.reset-size9.size8{font-size:.83333333em}.katex .fontsize-ensurer.reset-size9.size9,.katex .sizing.reset-size9.size9{font-size:1em}.katex .fontsize-ensurer.reset-size9.size10,.katex .sizing.reset-size9.size10{font-size:1.20023148em}.katex .fontsize-ensurer.reset-size9.size11,.katex .sizing.reset-size9.size11{font-size:1.43981481em}.katex .fontsize-ensurer.reset-size10.size1,.katex .sizing.reset-size10.size1{font-size:.24108004em}.katex .fontsize-ensurer.reset-size10.size2,.katex .sizing.reset-size10.size2{font-size:.28929605em}.katex .fontsize-ensurer.reset-size10.size3,.katex .sizing.reset-size10.size3{font-size:.33751205em}.katex .fontsize-ensurer.reset-size10.size4,.katex .sizing.reset-size10.size4{font-size:.38572806em}.katex .fontsize-ensurer.reset-size10.size5,.katex .sizing.reset-size10.size5{font-size:.43394407em}.katex .fontsize-ensurer.reset-size10.size6,.katex .sizing.reset-size10.size6{font-size:.48216008em}.katex .fontsize-ensurer.reset-size10.size7,.katex .sizing.reset-size10.size7{font-size:.57859209em}.katex .fontsize-ensurer.reset-size10.size8,.katex .sizing.reset-size10.size8{font-size:.69431051em}.katex .fontsize-ensurer.reset-size10.size9,.katex .sizing.reset-size10.size9{font-size:.83317261em}.katex .fontsize-ensurer.reset-size10.size10,.katex .sizing.reset-size10.size10{font-size:1em}.katex .fontsize-ensurer.reset-size10.size11,.katex .sizing.reset-size10.size11{font-size:1.19961427em}.katex .fontsize-ensurer.reset-size11.size1,.katex .sizing.reset-size11.size1{font-size:.20096463em}.katex .fontsize-ensurer.reset-size11.size2,.katex .sizing.reset-size11.size2{font-size:.24115756em}.katex .fontsize-ensurer.reset-size11.size3,.katex .sizing.reset-size11.size3{font-size:.28135048em}.katex .fontsize-ensurer.reset-size11.size4,.katex .sizing.reset-size11.size4{font-size:.32154341em}.katex .fontsize-ensurer.reset-size11.size5,.katex .sizing.reset-size11.size5{font-size:.36173633em}.katex .fontsize-ensurer.reset-size11.size6,.katex .sizing.reset-size11.size6{font-size:.40192926em}.katex .fontsize-ensurer.reset-size11.size7,.katex .sizing.reset-size11.size7{font-size:.48231511em}.katex .fontsize-ensurer.reset-size11.size8,.katex .sizing.reset-size11.size8{font-size:.57877814em}.katex .fontsize-ensurer.reset-size11.size9,.katex .sizing.reset-size11.size9{font-size:.69453376em}.katex .fontsize-ensurer.reset-size11.size10,.katex .sizing.reset-size11.size10{font-size:.83360129em}.katex .fontsize-ensurer.reset-size11.size11,.katex .sizing.reset-size11.size11{font-size:1em}.katex .delimsizing.size1{font-family:KaTeX_Size1}.katex .delimsizing.size2{font-family:KaTeX_Size2}.katex .delimsizing.size3{font-family:KaTeX_Size3}.katex .delimsizing.size4{font-family:KaTeX_Size4}.katex .delimsizing.mult .delim-size1>span{font-family:KaTeX_Size1}.katex .delimsizing.mult .delim-size4>span{font-family:KaTeX_Size4}.katex .nulldelimiter{display:inline-block;width:.12em}.katex .delimcenter,.katex .op-symbol{position:relative}.katex .op-symbol.small-op{font-family:KaTeX_Size1}.katex .op-symbol.large-op{font-family:KaTeX_Size2}.katex .accent>.vlist-t,.katex .op-limits>.vlist-t{text-align:center}.katex .accent .accent-body{position:relative}.katex .accent .accent-body:not(.accent-full){width:0}.katex .overlay{display:block}.katex .mtable .vertical-separator{display:inline-block;min-width:1px}.katex .mtable .arraycolsep{display:inline-block}.katex .mtable .col-align-c>.vlist-t{text-align:center}.katex .mtable .col-align-l>.vlist-t{text-align:left}.katex .mtable .col-align-r>.vlist-t{text-align:right}.katex .svg-align{text-align:left}.katex svg{fill:currentColor;stroke:currentColor;fill-rule:nonzero;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;display:block;height:inherit;position:absolute;width:100%}.katex svg path{stroke:none}.katex img{border-style:none;max-height:none;max-width:none;min-height:0;min-width:0}.katex .stretchy{display:block;overflow:hidden;position:relative;width:100%}.katex .stretchy:after,.katex .stretchy:before{content:""}.katex .hide-tail{overflow:hidden;position:relative;width:100%}.katex .halfarrow-left{left:0;overflow:hidden;position:absolute;width:50.2%}.katex .halfarrow-right{overflow:hidden;position:absolute;right:0;width:50.2%}.katex .brace-left{left:0;overflow:hidden;position:absolute;width:25.1%}.katex .brace-center{left:25%;overflow:hidden;position:absolute;width:50%}.katex .brace-right{overflow:hidden;position:absolute;right:0;width:25.1%}.katex .x-arrow-pad{padding:0 .5em}.katex .cd-arrow-pad{padding:0 .55556em 0 .27778em}.katex .mover,.katex .munder,.katex .x-arrow{text-align:center}.katex .boxpad{padding:0 .3em}.katex .fbox,.katex .fcolorbox{border:.04em solid;box-sizing:border-box}.katex .cancel-pad{padding:0 .2em}.katex .cancel-lap{margin-left:-.2em;margin-right:-.2em}.katex .sout{border-bottom-style:solid;border-bottom-width:.08em}.katex .angl{border-right:.049em solid;border-top:.049em solid;box-sizing:border-box;margin-right:.03889em}.katex .anglpad{padding:0 .03889em}.katex .eqn-num:before{content:"(" counter(katexEqnNo) ")";counter-increment:katexEqnNo}.katex .mml-eqn-num:before{content:"(" counter(mmlEqnNo) ")";counter-increment:mmlEqnNo}.katex .mtr-glue{width:50%}.katex .cd-vert-arrow{display:inline-block;position:relative}.katex .cd-label-left{display:inline-block;position:absolute;right:calc(50% + .3em);text-align:left}.katex .cd-label-right{display:inline-block;left:calc(50% + .3em);position:absolute;text-align:right}.katex-display{display:block;margin:1em 0;text-align:center}.katex-display>.katex{display:block;text-align:center;white-space:nowrap}.katex-display>.katex>.katex-html{display:block;position:relative}.katex-display>.katex>.katex-html>.tag{position:absolute;right:0}.katex-display.leqno>.katex>.katex-html>.tag{left:0;right:auto}.katex-display.fleqn>.katex{padding-left:2em;text-align:left}body{counter-reset:katexEqnNo mmlEqnNo}
+
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.katex-error {
+	color: var(--vscode-editorError-foreground);
+}
+
+/* From extension ms-toolsai.jupyter */
+/* These classnames are inherited from bootstrap, but are present in most notebook renderers */
+
+.alert {
+    width: auto;
+    padding: 1em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+}
+.alert > *:last-child {
+    margin-bottom: 0;
+}
+#preview > .alert:last-child {
+    /* Prevent this being set to zero by the default notebook stylesheet */
+    padding-bottom: 1em;
+}
+
+.alert-success {
+    /* Note there is no suitable color available, so we just copy "info" */
+    background-color: var(--theme-info-background);
+    color: var(--theme-info-foreground);
+}
+.alert-info {
+    background-color: var(--theme-info-background);
+    color: var(--theme-info-foreground);
+}
+.alert-warning {
+    background-color: var(--theme-warning-background);
+    color: var(--theme-warning-foreground);
+}
+.alert-danger {
+    background-color: var(--theme-error-background);
+    color: var(--theme-error-foreground);
+}
+
+</style>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous">
+<link href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css" rel="stylesheet" type="text/css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item { list-style-type: none; } .task-list-item-checkbox { margin-left: -20px; vertical-align: middle; }
+</style>
+        
+    </head>
+    <body class="vscode-body vscode-light">
+        <h1 id="implementing-speedy-group-chat-functionality-with-pusher-and-vue">Implementing speedy group chat functionality with Pusher and Vue.</h1>
+<p>{% details What is Pusher? %} <a href="https://www.pusher.com">Pusher</a> is a tool that enables you to build scalable real-time communication. Fast. {% enddetails %}</p>
+<h2 id="table-of-contents">Table Of Contents</h2>
+<ul>
+<li><a href="#features">Features</a></li>
+<li><a href="#requirements">Requirements</a></li>
+<li><a href="#setting-up-pusher">Setting up Pusher</a>
+<ul>
+<li><a href="#creating-pusher-channel">Creating a pusher channel</a></li>
+<li><a href="#get-app-keys">Getting your App Keys</a></li>
+<li><a href="#subscription-counting">Enabling subscription counting</a></li>
+</ul>
+</li>
+<li><a href="#nodejs-setup">Setting up NodeJS Backend</a>
+<ul>
+<li><a href="#packages">Packages</a></li>
+<li><a href="#add-app-keys">Adding your App Keys</a></li>
+<li><a href="#create-server">Creating an Express server</a></li>
+<li><a href="#handling-messages-with-pusher">Messaging with Pusher</a></li>
+</ul>
+</li>
+<li><a href="#vue-setup">Setting up Vue Frontend</a>
+<ul>
+<li><a href="#instantiating">Instantiating Vue and Pusher</a>
+<ul>
+<li><a href="#open-channel">Opening a channel</a></li>
+</ul>
+</li>
+<li><a href="#sending-messages">Sending messages</a></li>
+<li><a href="#disconnecting">Disconnecting from a channel</a></li>
+<li><a href="#HTML-and-css">Creating and styling HTML</a></li>
+</ul>
+</li>
+<li><a href="#results">Results</a></li>
+</ul>
+<h2 id="features-">Features <a name="features"></a></h2>
+<p>In this tutorial, We will use Pusher &amp; Vue to build a very simple chat app that enables fast, real-time group messaging across multiple users.</p>
+<p>Users will be able to create a username, join a group, and send and receive messages to/from all other online users in the group.</p>
+<p>This app will have its backend built with NodeJS and Express, and its frontend built with Pusher and Vue.</p>
+<h2 id="requirements-">Requirements <a name="requirements"></a></h2>
+<p>You will need:</p>
+<ul>
+<li>Basic <a href="https://nodejs.org">NodeJS</a> experience</li>
+<li>Basic <a href="https://vuejs.org">Vue</a> experience</li>
+<li>A Pusher account. More on that in the next section.</li>
+</ul>
+<h2 id="setting-up-pusher-">Setting up Pusher <a name="setting-up-pusher"></a></h2>
+<h3 id="step-1-creating-a-pusher-channel-">Step 1: Creating a Pusher Channel <a name="creating-pusher-channel"></a></h3>
+<ul>
+<li><a href="https://dashboard.pusher.com/accounts/sign_up">Sign up</a> for a Pusher account.</li>
+<li>Next, head over to <a href="https://dashboard.pusher.com/channels">channels</a> and click on &quot;Create App&quot;.</li>
+<li>Provide the following information:
+<ul>
+<li><strong>App Name</strong>:  This will be the name of the app on your pusher dashboard.</li>
+<li><strong>Cluster</strong>: This is the location of the servers that will handle requests from your app. Choose a location nearest to you.</li>
+<li><strong>Tech stack</strong>: This is optional. We'll use <strong>Vue.js</strong> for our frontend and <strong>Node.js</strong> for our backend.</li>
+</ul>
+</li>
+</ul>
+<p>Your setup configurations should look something like this:
+<img src="file:///c:\Users\USER\code\misc\Hacktoberfest-2022\pusher-vue\article\img\create-pusher-app.png" alt="Create Pusher App - Screenshot">
+Click on <strong>Create App</strong> to continue.</p>
+<h3 id="step-2-get-your-app-keys-">Step 2: Get your App Keys <a name="get-app-keys"></a></h3>
+<p>To use Pusher channels, you need App Keys for your app.</p>
+<ul>
+<li>Head over to the <strong>App Keys</strong> section on your Pusher App dashboard.</li>
+<li>Copy your <code>app_id</code>, <code>key</code>, <code>secret</code> and <code>cluster</code>.</li>
+</ul>
+<h3 id="step-3-enabling-subscription-counting-">Step 3: Enabling subscription counting. <a name="subscription-counting"></a></h3>
+<p><a href="https://blog.pusher.com/counting-live-users-at-scale-with-subscription-count-events/">Subscription count</a> is an in-built pusher event that lets you know how many clients are connected to a single channel.</p>
+<p>If this feature is enabled, Pusher will publish a <strong>subscription_count</strong> event whenever the number of subscribers on a given channel changes.</p>
+<p>Here's how to enable this feature:</p>
+<ul>
+<li>From your Pusher App dashboard, head over to <strong>App Settings</strong>.</li>
+<li>Scroll down and toggle the switches to <strong>Enable subscription counting</strong> and <strong>Enable subscription count events in channels</strong>
+<img src="file:///c:\Users\USER\code\misc\Hacktoberfest-2022\pusher-vue\article\img\subscription-counting.png" alt="Toggle On Subscription Counting - Screenshot"></li>
+</ul>
+<h2 id="setting-up-the-nodejs-backend-">Setting up the NodeJS backend <a name="nodejs-setup"></a></h2>
+<h3 id="step-1-install-packages-">Step 1: Install packages <a name="packages"></a></h3>
+<p>Run the following command to install the dependencies we'll need</p>
+<pre><code class="language-cmd"><div>npm i cors dotenv express pusher
+</div></code></pre>
+<h3 id="step-2-add-app-keys-to-your-project-">Step 2: Add app keys to your project <a name="add-app-keys"></a></h3>
+<p>Create a <code>.env</code> file in your server directory and paste the Pusher app keys you copied earlier</p>
+<pre><code class="language-json"><div>app_id = <span class="hljs-string">&quot;1499155&quot;</span>
+key = <span class="hljs-string">&quot;326ba7284eae570f59ac&quot;</span>
+secret = <span class="hljs-string">&quot;0919a7fb769182a2ef69&quot;</span>
+cluster = <span class="hljs-string">&quot;eu&quot;</span>
+Remember to change those values to match your own Pusher app keys.
+</div></code></pre>
+<h3 id="step-3-create-express-server-">Step 3: Create express server <a name="create-server"></a></h3>
+<p>Next, create an <code>app.js</code> file in your server directory and add the following code:</p>
+<pre><code class="language-javascript"><div><span class="hljs-keyword">const</span> express = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;express&quot;</span>);
+<span class="hljs-keyword">const</span> Pusher = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;pusher&quot;</span>);
+<span class="hljs-keyword">const</span> cors = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;cors&quot;</span>);
+
+<span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;dotenv&quot;</span>).config();
+<span class="hljs-keyword">const</span> app = express();
+<span class="hljs-keyword">const</span> port = process.env.PORT || <span class="hljs-number">3000</span>;
+<span class="hljs-keyword">const</span> { app_id, key, secret, cluster } = process.env;
+
+app.use(express.json());
+app.use(cors());
+app.use(express.static(<span class="hljs-string">&quot;public&quot;</span>));
+
+app.listen(port, <span class="hljs-function">() =&gt;</span> {
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">`Group chat server started at http://localhost:<span class="hljs-subst">${port}</span>`</span>);
+
+});
+</div></code></pre>
+<p>This sets up a basic express http server and fetches the environment variables</p>
+<h3 id="step-4-messaging-with-pusher-">Step 4: Messaging with Pusher <a name="handling-messages-with-pusher"></a></h3>
+<p>Add the below snippet to your <code>app.js</code> to connect to your Pusher app:</p>
+<pre><code class="language-javascript"><div><span class="hljs-comment">// Setup Pusher</span>
+<span class="hljs-keyword">const</span> pusher = <span class="hljs-keyword">new</span> Pusher({
+  <span class="hljs-attr">appId</span>: app_id,
+  key,
+  secret,
+  cluster,
+});
+</div></code></pre>
+<p>Next, add the following snippet:</p>
+<pre><code class="language-javascript"><div><span class="hljs-comment">// send message data to all clients connected to a channel</span>
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">broadcastMessage</span>(<span class="hljs-params">{ message, sender, timestamp, channel, user_id }</span>) </span>{
+  <span class="hljs-comment">// create &quot;message-in&quot; event for each new message received </span>
+  pusher
+    .trigger(channel, <span class="hljs-string">&quot;message-in&quot;</span>, {
+      message,
+      sender,
+      user_id,
+      timestamp,
+    })
+    .catch(<span class="hljs-function">(<span class="hljs-params">error</span>) =&gt;</span> {
+      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;Error pushing to client:&quot;</span>, error);
+    });
+}
+
+<span class="hljs-comment">// receive message data from client</span>
+app.post(<span class="hljs-string">&quot;/message&quot;</span>, <span class="hljs-function">(<span class="hljs-params">req, res</span>) =&gt;</span> {
+  broadcastMessage(req.body);
+  res.send(<span class="hljs-string">&quot;OK&quot;</span>);
+});
+</div></code></pre>
+<p>This creates an endpoint to receive messages from a connected user, and then broadcast the message to all the users on the channel.</p>
+<p>Finally, open up your terminal and run:</p>
+<pre><code class="language-cmd"><div>node app.js
+</div></code></pre>
+<blockquote>
+<p>Thats all for NodeJS!</p>
+</blockquote>
+<h2 id="setting-up-the-vue-frontend-">Setting up the Vue frontend <a name="vue-setup"></a></h2>
+<p>Next, create a <code>/public</code> in your server directory and in it, create the following files:</p>
+<ul>
+<li><code>index.HTML</code></li>
+<li><code>index.css</code></li>
+<li><code>index.js</code></li>
+</ul>
+<h3 id="creating-a-vue-instance-and-connecting-to-pusher-">Creating a Vue instance and connecting to Pusher <a name="instantiating"></a></h3>
+<p>Open up the <code>index.js</code> file and add the following code:</p>
+<pre><code class="language-javascript"><div><span class="hljs-keyword">const</span> PusherAppKey = <span class="hljs-string">&quot;d1d37aa9b3e2dd707d91&quot;</span>;
+<span class="hljs-keyword">const</span> PusherAppCluster = <span class="hljs-string">&quot;eu&quot;</span>;
+<span class="hljs-keyword">var</span> pusher;
+<span class="hljs-keyword">var</span> channel;
+<span class="hljs-keyword">var</span> user_id;
+
+<span class="hljs-keyword">let</span> app = <span class="hljs-keyword">new</span> Vue({
+  <span class="hljs-attr">el</span>: <span class="hljs-string">&quot;#app&quot;</span>,
+  <span class="hljs-function"><span class="hljs-title">data</span>(<span class="hljs-params"></span>)</span> {
+    <span class="hljs-keyword">return</span> {
+      <span class="hljs-attr">connectionState</span>: <span class="hljs-literal">null</span>,
+      <span class="hljs-attr">stage</span>: <span class="hljs-string">&quot;subscribe&quot;</span>, <span class="hljs-comment">// subscribe or chat</span>
+      <span class="hljs-comment">//</span>
+      <span class="hljs-attr">username</span>: <span class="hljs-string">&quot;&quot;</span>,
+      <span class="hljs-attr">usernamePlaceholder</span>: <span class="hljs-string">&quot;Username&quot;</span>,
+      <span class="hljs-attr">currentChannel</span>: <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-comment">// remove this</span>
+      <span class="hljs-attr">onlineUsersCount</span>: <span class="hljs-number">1</span>,
+      <span class="hljs-comment">//</span>
+      <span class="hljs-attr">message</span>: <span class="hljs-string">&quot;&quot;</span>,
+      <span class="hljs-attr">selectedMessageTimestamp</span>: <span class="hljs-literal">null</span>,
+      <span class="hljs-attr">messages</span>: [],
+      <span class="hljs-attr">channels</span>: {
+        <span class="hljs-attr">Programming</span>: <span class="hljs-string">&quot;programming&quot;</span>,
+        <span class="hljs-string">&quot;Tech News&quot;</span>: <span class="hljs-string">&quot;tech-news-channel&quot;</span>,
+        <span class="hljs-string">&quot;Dad Jokes&quot;</span>: <span class="hljs-string">&quot;dad-jokes-channel&quot;</span>,
+      },
+    };
+  },
+  <span class="hljs-attr">watch</span>: {
+    <span class="hljs-function"><span class="hljs-title">username</span>(<span class="hljs-params">curr, prev</span>)</span> {
+      <span class="hljs-comment">// limit usernames to 20 characters</span>
+      <span class="hljs-keyword">if</span> (<span class="hljs-built_in">String</span>(curr).trim().length &gt; <span class="hljs-number">20</span>) <span class="hljs-built_in">this</span>.username = prev;
+    },
+  },
+  <span class="hljs-function"><span class="hljs-title">beforeMount</span>(<span class="hljs-params"></span>)</span> {
+    <span class="hljs-comment">// Generate unique user id</span>
+    user_id = <span class="hljs-built_in">Math</span>.random().toString(<span class="hljs-number">36</span>).substring(<span class="hljs-number">2</span>);
+    connectToPusher();
+    <span class="hljs-comment">// Watch pusher connection state for changes</span>
+    pusher.connection.bind(<span class="hljs-string">&quot;state_change&quot;</span>, <span class="hljs-function">(<span class="hljs-params">states</span>) =&gt;</span> {
+      <span class="hljs-built_in">this</span>.connectionState = states.current;
+    });
+  },
+  <span class="hljs-function"><span class="hljs-title">mounted</span>(<span class="hljs-params"></span>)</span> {
+    <span class="hljs-built_in">this</span>.openChannel();
+  },
+  <span class="hljs-attr">methods</span>: {
+    <span class="hljs-function"><span class="hljs-title">verifyInput</span>(<span class="hljs-params"></span>)</span> {
+      <span class="hljs-keyword">if</span> (!<span class="hljs-built_in">this</span>.username) {
+        <span class="hljs-built_in">this</span>.usernamePlaceholder = <span class="hljs-string">&quot;Please enter a username&quot;</span>;
+        <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+      }
+      <span class="hljs-keyword">if</span> (!<span class="hljs-built_in">this</span>.currentChannel) <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;
+      <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;
+    },
+    <span class="hljs-function"><span class="hljs-title">openChannel</span>(<span class="hljs-params"></span>)</span> {
+      <span class="hljs-comment">// if pusher is not connected, reconnect</span>
+      <span class="hljs-keyword">if</span> (<span class="hljs-built_in">this</span>.connectionState !== <span class="hljs-string">&quot;disconnected&quot;</span>) {
+        connectToPusher();
+      }
+      <span class="hljs-comment">// ensure inputs are valid before proceeding</span>
+      <span class="hljs-keyword">if</span> (!<span class="hljs-built_in">this</span>.verifyInput()) <span class="hljs-keyword">return</span>;
+      <span class="hljs-comment">// subscribe to the chosen channel</span>
+      <span class="hljs-keyword">let</span> channelId = <span class="hljs-built_in">this</span>.channels[<span class="hljs-built_in">this</span>.currentChannel];
+      channel = pusher.subscribe(channelId);
+      <span class="hljs-comment">// move to the chats screen</span>
+      <span class="hljs-built_in">this</span>.stage = <span class="hljs-string">&quot;chat&quot;</span>;
+      <span class="hljs-comment">// listen for a message events on the channel</span>
+      channel.bind(<span class="hljs-string">&quot;message-in&quot;</span>, <span class="hljs-function">(<span class="hljs-params">data</span>) =&gt;</span> {
+        <span class="hljs-comment">// format and add the message to the list</span>
+        data.type = data.user_id == user_id ? <span class="hljs-string">&quot;outgoing&quot;</span> : <span class="hljs-string">&quot;incoming&quot;</span>;
+        data.dateTime = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>(data.timestamp).toLocaleString().split(<span class="hljs-string">&quot;, &quot;</span>);
+        <span class="hljs-built_in">this</span>.messages.push(data);
+        <span class="hljs-comment">// scroll to bottom of the chats box after a new message is added</span>
+        <span class="hljs-built_in">this</span>.$nextTick(<span class="hljs-function">() =&gt;</span> {
+          <span class="hljs-keyword">let</span> chatsBox = <span class="hljs-built_in">document</span>.querySelector(<span class="hljs-string">&quot;.chats-box&quot;</span>);
+          chatsBox.scrollTop = chatsBox.scrollHeight;
+        });
+      });
+      <span class="hljs-comment">// listen for a subscription count event on the channel</span>
+      channel.bind(<span class="hljs-string">&quot;pusher:subscription_count&quot;</span>, <span class="hljs-function">(<span class="hljs-params">data</span>) =&gt;</span> {
+        <span class="hljs-built_in">this</span>.onlineUsersCount = data.subscription_count;
+      });
+    },
+  },
+});
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">connectToPusher</span>(<span class="hljs-params"></span>) </span>{
+  <span class="hljs-comment">// instantiate Pusher</span>
+  pusher = <span class="hljs-keyword">new</span> Pusher(PusherAppKey, {
+    <span class="hljs-attr">cluster</span>: <span class="hljs-string">&quot;eu&quot;</span>,
+  });
+}
+</div></code></pre>
+<p>{% details That's a lot of code. Here's a summary: %}</p>
+<ul>
+<li>First, we instantiate Vue:<pre><code class="language-javascript"><div><span class="hljs-keyword">let</span> app = <span class="hljs-keyword">new</span> Vue({
+<span class="hljs-attr">el</span>: <span class="hljs-string">&quot;#app&quot;</span>,
+  <span class="hljs-comment">// vue instance options...</span>
+});
+</div></code></pre>
+</li>
+<li>Next, we create a function to instantiate Pusher:</li>
+</ul>
+<pre><code class="language-javascript"><div>  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">connectToPusher</span>(<span class="hljs-params"></span>) </span>{
+    <span class="hljs-comment">// instantiate Pusher</span>
+    pusher = <span class="hljs-keyword">new</span> Pusher(PusherAppKey, {
+      <span class="hljs-attr">cluster</span>: PusherAppCluster,
+    });
+  }
+</div></code></pre>
+<p>This connects the Pusher client to our Pusher app instance.</p>
+<p>Remember to change <code>PusherAppKey</code> and <code>PusherAppCluster</code> to match your own <a href="#get-app-keys">Pusher app key values</a>.</p>
+<ul>
+<li>Then we set up a beforeMount hook to:</li>
+</ul>
+<pre><code class="language-javascript"><div>  <span class="hljs-function"><span class="hljs-title">beforeMount</span>(<span class="hljs-params"></span>)</span>{
+    <span class="hljs-comment">// Generate unique user id</span>
+    user_id = <span class="hljs-built_in">Math</span>.random().toString(<span class="hljs-number">36</span>).substring(<span class="hljs-number">2</span>);
+    connectToPusher();
+    <span class="hljs-comment">// Watch pusher connection state for changes</span>
+    pusher.connection.bind(<span class="hljs-string">&quot;state_change&quot;</span>, <span class="hljs-function">(<span class="hljs-params">states</span>) =&gt;</span> {
+      <span class="hljs-built_in">this</span>.connectionState = states.current;
+    });
+  }
+</div></code></pre>
+<p>This generates a unique user ID for the user, then it calls the <code>connectToPusher()</code> function we created earlier.</p>
+<p>Finally, it binds a function to watch for changes to the Pusher instance's connection.</p>
+<h4 id="open-channel-">Open Channel <a name="open-channel"></a></h4>
+<p>The content of the <code>openChannel()</code> method is especially important, so let's go through it.</p>
+<ul>
+<li>First, we subscribe to the specific Pusher channel selected by the user.</li>
+</ul>
+<pre><code class="language-javascript"><div>  channel = pusher.subscribe(channelId);
+</div></code></pre>
+<ul>
+<li>Then we bind a function to listen for <code>message-in</code> events on that channel. This function gets triggered every time there's a new message on the channel. It then adds the message data to our Vue instance.</li>
+</ul>
+<pre><code class="language-javascript"><div>  channel.bind(<span class="hljs-string">&quot;message-in&quot;</span>, <span class="hljs-function">(<span class="hljs-params">data</span>) =&gt;</span> {
+    <span class="hljs-comment">/* some other code */</span>
+    <span class="hljs-built_in">this</span>.messages.push(data);
+    <span class="hljs-comment">/* some other code */</span>
+  });
+</div></code></pre>
+<ul>
+<li>Finally, we listen for a <code>subscription_count</code> event on the channel. This is a Pusher event that gets automatically triggered each time a client connects to a channel.</li>
+</ul>
+<pre><code class="language-javascript"><div>channel.bind(<span class="hljs-string">&quot;pusher:subscription_count&quot;</span>, <span class="hljs-function">(<span class="hljs-params">data</span>) =&gt;</span> {
+      <span class="hljs-built_in">this</span>.onlineUsersCount = data.subscription_count;
+});
+</div></code></pre>
+<p>This event allows us to show how many users are online in a channel at any given time.
+{% enddetails %}</p>
+<h3 id="sending-messages-">Sending Messages <a name="sending-messages"></a></h3>
+<p>Add the following function to your Vue instance methods:</p>
+<pre><code class="language-javascript"><div><span class="hljs-function"><span class="hljs-title">sendMessage</span>(<span class="hljs-params">event</span>)</span> {
+  <span class="hljs-keyword">if</span> (event &amp;&amp; event.key) {
+    <span class="hljs-keyword">if</span> (event.key != <span class="hljs-string">&quot;Enter&quot;</span>) <span class="hljs-keyword">return</span>;
+  }
+  <span class="hljs-keyword">if</span> (!<span class="hljs-built_in">this</span>.message) <span class="hljs-keyword">return</span>;
+  <span class="hljs-keyword">let</span> channelId = <span class="hljs-built_in">this</span>.channels[<span class="hljs-built_in">this</span>.currentChannel];
+  <span class="hljs-comment">// send a fetch post request</span>
+  <span class="hljs-keyword">let</span> data = {
+    <span class="hljs-attr">message</span>: <span class="hljs-built_in">this</span>.message,
+    <span class="hljs-attr">sender</span>: <span class="hljs-built_in">this</span>.username,
+    <span class="hljs-attr">timestamp</span>: <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>().getTime(),
+    <span class="hljs-attr">channel</span>: channelId,
+    user_id,
+  };
+  fetch(<span class="hljs-string">&quot;/message&quot;</span>, {
+    <span class="hljs-attr">method</span>: <span class="hljs-string">&quot;POST&quot;</span>,
+    <span class="hljs-attr">headers</span>: {
+      <span class="hljs-string">&quot;Content-Type&quot;</span>: <span class="hljs-string">&quot;application/json&quot;</span>,
+    },
+    <span class="hljs-attr">body</span>: <span class="hljs-built_in">JSON</span>.stringify(data),
+  })
+    .then(<span class="hljs-function">() =&gt;</span> {
+      <span class="hljs-built_in">this</span>.message = <span class="hljs-string">&quot;&quot;</span>;
+    })
+    .catch(<span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> {
+      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;Error sending message&quot;</span>, e);
+    });
+}
+</div></code></pre>
+<p>{% details Here's what we just did: %}</p>
+<ul>
+<li>We created an object containing the message data we want to send:</li>
+</ul>
+<pre><code class="language-javascript"><div><span class="hljs-keyword">let</span> data = {
+<span class="hljs-comment">// </span>
+}
+</div></code></pre>
+<ul>
+<li>Then we sent the data to our NodeJS server via a POST request to the <code>/message</code> endpoint:</li>
+</ul>
+<pre><code class="language-javascript"><div>fetch(<span class="hljs-string">&quot;/message&quot;</span>, {
+  <span class="hljs-attr">method</span>: <span class="hljs-string">&quot;POST&quot;</span>,
+  <span class="hljs-attr">headers</span>: {
+    <span class="hljs-string">&quot;Content-Type&quot;</span>: <span class="hljs-string">&quot;application/json&quot;</span>,
+  },
+  <span class="hljs-attr">body</span>: <span class="hljs-built_in">JSON</span>.stringify(data),
+})
+</div></code></pre>
+<p>Due to our <a href="#handling-messages-with-pusher">server-side code</a>, when this <code>/message</code> endpoint is called, the <code>message-in</code> event is triggered on the Pusher Channel, with the same data we just sent via our http request.
+{% enddetails %}</p>
+<h3 id="disconnecting-from-a-channel-">Disconnecting from a channel <a name="disconnecting"></a></h3>
+<p>Add one final function to your Vue instance methods:</p>
+<pre><code class="language-javascript"><div><span class="hljs-function"><span class="hljs-title">disconnect</span>(<span class="hljs-params"></span>)</span> {
+  <span class="hljs-built_in">this</span>.stage = <span class="hljs-string">&quot;subscribe&quot;</span>;
+  <span class="hljs-built_in">this</span>.messages = [];
+  <span class="hljs-built_in">this</span>.onlineUsersCount = <span class="hljs-number">1</span>;
+  pusher.disconnect();
+}
+</div></code></pre>
+<p>This will disconnect from the current channel, clear all the data on our Vue instance related to that channel, and return the user to the group selection menu.</p>
+<h3 id="creating-and-styling-our-html--">Creating and styling our HTML  <a name="HTML-and-css"></a></h3>
+<p>Go to the <code>index.js</code> file and paste this snippet:</p>
+<pre><code class="language-HTML"><div><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-meta-keyword">HTML</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">HTML</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">&quot;en&quot;</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">&quot;UTF-8&quot;</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">http-equiv</span>=<span class="hljs-string">&quot;X-UA-Compatible&quot;</span> <span class="hljs-attr">content</span>=<span class="hljs-string">&quot;IE=edge&quot;</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;viewport&quot;</span> <span class="hljs-attr">content</span>=<span class="hljs-string">&quot;width=device-width, initial-scale=1.0&quot;</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>Document<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">link</span> <span class="hljs-attr">rel</span>=<span class="hljs-string">&quot;stylesheet&quot;</span> <span class="hljs-attr">href</span>=<span class="hljs-string">&quot;./index.css&quot;</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-name">main</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;app&quot;</span> <span class="hljs-attr">v-cloak</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;subscribe-container&quot;</span> <span class="hljs-attr">v-show</span>=<span class="hljs-string">&quot;stage==&#x27;subscribe&#x27;&quot;</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">header</span>&gt;</span>
+                Select A Group
+            <span class="hljs-tag">&lt;/<span class="hljs-name">header</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;subscribe-items&quot;</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;subscribe-item&quot;</span> <span class="hljs-attr">v-for</span>=<span class="hljs-string">&quot;(v, name) in channels&quot;</span> <span class="hljs-attr">:class</span>=<span class="hljs-string">&quot;{selected: currentChannel==name}&quot;</span> @<span class="hljs-attr">click</span>=<span class="hljs-string">&quot;currentChannel=name&quot;</span>&gt;</span>
+                    <span class="hljs-tag">&lt;<span class="hljs-name">span</span>&gt;</span>{{name}}<span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span>
+                <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+            <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;text&quot;</span> <span class="hljs-attr">v-model</span>=<span class="hljs-string">&quot;username&quot;</span> <span class="hljs-attr">:placeholder</span>=<span class="hljs-string">&quot;usernamePlaceholder&quot;</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">:class</span>=<span class="hljs-string">&quot;{disabled: !username || !currentChannel}&quot;</span> @<span class="hljs-attr">click</span>=<span class="hljs-string">&quot;openChannel&quot;</span>&gt;</span>Proceed<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+
+        <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;chats-container&quot;</span> <span class="hljs-attr">v-show</span>=<span class="hljs-string">&quot;stage==&#x27;chat&#x27;&quot;</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-name">header</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">span</span>&gt;</span>{{currentChannel}}<span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">small</span>&gt;</span>
+                    <span class="hljs-tag">&lt;<span class="hljs-name">ins</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">ins</span>&gt;</span> {{onlineUsersCount}} users online
+                <span class="hljs-tag">&lt;/<span class="hljs-name">small</span>&gt;</span>
+                
+                <span class="hljs-tag">&lt;<span class="hljs-name">button</span> @<span class="hljs-attr">click</span>=<span class="hljs-string">&quot;disconnect&quot;</span>&gt;</span>EXIT<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+            <span class="hljs-tag">&lt;/<span class="hljs-name">header</span>&gt;</span>
+
+            <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;chats-box&quot;</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;chat-item&quot;</span> 
+                    <span class="hljs-attr">v-for</span>=<span class="hljs-string">&quot;({sender, message, timestamp, type, dateTime}, i) in messages&quot;</span> 
+                    <span class="hljs-attr">:class</span>=<span class="hljs-string">&quot;{out: type==&#x27;outgoing&#x27;, selected: selectedMessageTimestamp==timestamp}&quot;</span>
+                    @<span class="hljs-attr">click</span>=<span class="hljs-string">&quot;selectedMessageTimestamp=timestamp&quot;</span>
+                &gt;</span>
+                    <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;chat-item-content&quot;</span>&gt;</span>
+                        <span class="hljs-tag">&lt;<span class="hljs-name">div</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;username&quot;</span>&gt;</span>{{sender}}<span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+                        <span class="hljs-tag">&lt;<span class="hljs-name">span</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;chat-message&quot;</span>&gt;</span>{{message}}<span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span>
+                    <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+                    <span class="hljs-tag">&lt;<span class="hljs-name">span</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;timestamp&quot;</span>&gt;</span>
+                        <span class="hljs-tag">&lt;<span class="hljs-name">small</span> <span class="hljs-attr">v-for</span>=<span class="hljs-string">&quot;item in dateTime&quot;</span>&gt;</span>
+                            {{item}}
+                        <span class="hljs-tag">&lt;/<span class="hljs-name">small</span>&gt;</span>
+                    <span class="hljs-tag">&lt;/<span class="hljs-name">span</span>&gt;</span>
+                <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+            <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+
+            <span class="hljs-tag">&lt;<span class="hljs-name">footer</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;text&quot;</span> <span class="hljs-attr">placeholder</span>=<span class="hljs-string">&quot;Type a message&quot;</span> <span class="hljs-attr">v-on:keypress</span>=<span class="hljs-string">&quot;sendMessage($event)&quot;</span> <span class="hljs-attr">v-model</span>=<span class="hljs-string">&quot;message&quot;</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;message&quot;</span>&gt;</span>
+                <span class="hljs-tag">&lt;<span class="hljs-name">button</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;send&quot;</span> @<span class="hljs-attr">click</span>=<span class="hljs-string">&quot;sendMessage&quot;</span>&gt;</span>Send<span class="hljs-tag">&lt;/<span class="hljs-name">button</span>&gt;</span>
+            <span class="hljs-tag">&lt;/<span class="hljs-name">footer</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-name">main</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span>
+<span class="hljs-comment">&lt;!-- axios --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;https://unpkg.com/axios/dist/axios.min.js&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span class="hljs-comment">&lt;!-- vue --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;https://cdn.jsdelivr.net/npm/vue@2.7.13&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span class="hljs-comment">&lt;!-- pusher --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;https://js.pusher.com/7.2/pusher.min.js&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span class="hljs-comment">&lt;!--  --&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;./index.js&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-name">HTML</span>&gt;</span>
+</div></code></pre>
+<p>Finally, it's time to style our page. Open up your <code>index.css</code> file and insert this:</p>
+<pre><code class="language-css"><div><span class="hljs-comment">/* import roboto font */</span>
+<span class="hljs-keyword">@import</span> url(<span class="hljs-string">&quot;https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&amp;display=swap&quot;</span>);
+<span class="hljs-comment">/* import ubuntu font */</span>
+<span class="hljs-keyword">@import</span> url(<span class="hljs-string">&quot;https://fonts.googleapis.com/css?family=Ubuntu:300,400,500,700&amp;display=swap&quot;</span>);
+
+<span class="hljs-selector-attr">[v-cloak]</span> {
+  <span class="hljs-attribute">visibility</span>: hidden;
+}
+
+<span class="hljs-selector-tag">body</span> {
+  <span class="hljs-attribute">padding</span>: <span class="hljs-number">0px</span>;
+  <span class="hljs-attribute">margin</span>: <span class="hljs-number">0px</span>;
+  <span class="hljs-attribute">font-size</span>: <span class="hljs-number">16px</span>;
+  <span class="hljs-attribute">width</span>: <span class="hljs-number">100%</span>;
+  <span class="hljs-attribute">position</span>: relative;
+  <span class="hljs-attribute">font-family</span>: <span class="hljs-string">&quot;Roboto&quot;</span>, sans-serif;
+}
+
+<span class="hljs-selector-id">#app</span> {
+  <span class="hljs-attribute">display</span>: flex;
+  <span class="hljs-attribute">height</span>: <span class="hljs-number">100vh</span>;
+  <span class="hljs-attribute">max-height</span>: <span class="hljs-number">100vh</span>;
+  <span class="hljs-attribute">width</span>: <span class="hljs-number">100%</span>;
+  <span class="hljs-attribute">max-width</span>: <span class="hljs-number">100vw</span>;
+  <span class="hljs-attribute">position</span>: relative;
+  <span class="hljs-attribute">background</span>: white;
+  <span class="hljs-attribute">top</span>: <span class="hljs-number">0px</span>;
+  <span class="hljs-attribute">left</span>: <span class="hljs-number">0px</span>;
+  <span class="hljs-attribute">padding</span>: <span class="hljs-number">0px</span>;
+}
+
+<span class="hljs-comment">/* the popup stage */</span>
+<span class="hljs-selector-class">.subscribe-container</span> {
+  <span class="hljs-attribute">border-radius</span>: <span class="hljs-number">5px</span>;
+  <span class="hljs-attribute">display</span>: flex;
+  <span class="hljs-attribute">flex-flow</span>: column nowrap;
+  <span class="hljs-attribute">box-shadow</span>: <span class="hljs-number">5px</span> <span class="hljs-number">5px</span> <span class="hljs-number">4px</span> <span class="hljs-number">0px</span> <span class="hljs-built_in">rgba</span>(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0.75</span>);
+  <span class="hljs-attribute">border</span>: <span class="hljs-number">2px</span> solid <span class="hljs-built_in">rgba</span>(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0.75</span>);
+  <span class="hljs-attribute">box-sizing</span>: border-box;
+  <span class="hljs-attribute">width</span>: <span class="hljs-number">300px</span>;
+  <span class="hljs-comment">/* height: ; */</span>
+  <span class="hljs-comment">/* height: 300px; */</span>
+  <span class="hljs-attribute">max-height</span>: <span class="hljs-number">300px</span>;
+  <span class="hljs-attribute">margin</span>: auto;
+  <span class="hljs-attribute">overflow</span>: hidden;
+}
+<span class="hljs-selector-class">.subscribe-container</span> <span class="hljs-selector-tag">header</span> {
+  <span class="hljs-attribute">width</span>: <span class="hljs-number">100%</span>;
+  <span class="hljs-attribute">height</span>: <span class="hljs-number">50px</span>;
+  <span class="hljs-attribute">display</span>: flex;
+  <span class="hljs-attribute">justify-content</span>: center;
+  <span class="hljs-attribute">align-items</span>: center;
+  <span class="hljs-attribute">background-color</span>: <span class="hljs-built_in">rgb</span>(<span class="hljs-number">63</span>, <span class="hljs-number">81</span>, <span class="hljs-number">181</span>);
+  <span class="hljs-attribute">color</span>: white;
+  <span class="hljs-attribute">font-weight</span>: bold;
+}
+<span class="hljs-selector-class">.subscribe-container</span> <span class="hljs-selector-class">.subscribe-items</span> {
+  <span class="hljs-attribute">width</span>: <span class="hljs-number">100%</span>;
+  <span class="hljs-attribute">height</span>: auto;
+  <span class="hljs-attribute">display</span>: flex;
+  <span class="hljs-attribute">flex-direction</span>: column;
+  <span class="hljs-attribute">justify-content</span>: center;
+  <span class="hljs-attribute">align-items</span>: center;
+  <span class="hljs-attribute">overflow-y</span>: scroll;
+}
+<span class="hljs-comment">/* no scrollbar */</span>
+<span class="hljs-selector-class">.subscribe-container</span> <span class="hljs-selector-class">.subscribe-items</span>::-webkit-scrollbar {
+  display: none;
+}
+<span class="hljs-selector-class">.subscribe-container</span> <span class="hljs-selector-class">.subscribe-items</span> <span class="hljs-selector-class">.subscribe-item</span> {
+  <span class="hljs-attribute">display</span>: flex;
+  <span class="hljs-attribute">flex-direction</span>: column;
+  <span class="hljs-attribute">width</span>: <span class="hljs-number">100%</span>;
+  <span class="hljs-attribute">justify-content</span>: center;
+  <span class="hljs-attribute">align-items</span>: center;
+  <span class="hljs-attribute">height</span>: <span class="hljs-number">40px</span>;
+  <span class="hljs-attribute">margin</span>: <span class="hljs-number">5px</span> auto;
+  <span class="hljs-attribute">width</span>: <span class="hljs-number">96%</span>;
+  <span class="hljs-attribute">border-radius</span>: <span class="hljs-number">3px</span>;
+  <span class="hljs-attribute">flex-shrink</span>: <span class="hljs-number">0</span>;
+  <span class="hljs-attribute">color</span>: <span class="hljs-built_in">rgb</span>(<span class="hljs-number">63</span>, <span class="hljs-number">81</span>, <span class="hljs-number">181</span>);
+  <span class="hljs-attribute">font-weight</span>: bold;
+}
+<span class="hljs-selector-class">.subscribe-container</span> <span class="hljs-selector-class">.subscribe-items</span> <span class="hljs-selector-class">.subscribe-item</span><span class="hljs-selector-pseudo">:hover</span> {
+  <span class="hljs-attribute">background-color</span>: <span class="hljs-built_in">rgba</span>(<span class="hljs-number">63</span>, <span class="hljs-number">81</span>, <span class="hljs-number">181</span>, <span class="hljs-number">0.1</span>);
+}
+<span class="hljs-selector-class">.subscribe-container</span> <span class="hljs-selector-class">.subscribe-items</span> <span class="hljs-selector-class">.subscribe-item</span><span class="hljs-selector-class">.selected</span> {
+  <span class="hljs-attribute">background-color</span>: <span class="hljs-built_in">rgba</span>(<span class="hljs-number">63</span>, <span class="hljs-number">81</span>, <span class="hljs-number">181</span>, <span class="hljs-number">0.25</span>);
+}
+<span class="hljs-selector-class">.subscribe-container</span> <span class="hljs-selector-class">.subscribe-items</span> <span class="hljs-selector-class">.subscribe-item</span> <span class="hljs-selector-tag">span</span> {
+  <span class="hljs-attribute">text-transform</span>: uppercase;
+  <span class="hljs-attribute">font-size</span>: <span class="hljs-number">1.1em</span>;
+}
+<span class="hljs-selector-class">.subscribe-container</span> <span class="hljs-selector-class">.subscribe-items</span> <span class="hljs-selector-class">.subscribe-item</span> small {
+  <span class="hljs-attribute">font-size</span>: <span class="hljs-number">0.7em</span>;
+}
+<span class="hljs-comment">/* username &amp; submit */</span>
+<span class="hljs-selector-class">.subscribe-container</span> <span class="hljs-selector-tag">input</span> {
+  <span class="hljs-attribute">background</span>: white;
+  <span class="hljs-attribute">height</span>: <span class="hljs-number">40px</span>;
+  <span class="hljs-attribute">width</span>: <span class="hljs-number">100%</span>;
+  <span class="hljs-attribute">padding</span>: <span class="hljs-number">5px</span>;
+  <span class="hljs-attribute">border</span>: none;
+  <span class="hljs-attribute">margin-top</span>: <span class="hljs-number">5px</span>;
+  <span class="hljs-attribute">text-align</span>: center;
+  <span class="hljs-attribute">font-size</span>: <span class="hljs-number">0.85em</span>;
+  <span class="hljs-attribute">color</span>: <span class="hljs-built_in">rgb</span>(<span class="hljs-number">63</span>, <span class="hljs-number">81</span>, <span class="hljs-number">181</span>);
+}
+<span class="hljs-selector-class">.subscribe-container</span> <span class="hljs-selector-tag">button</span> {
+  <span class="hljs-attribute">width</span>: <span class="hljs-number">100%</span>;
+  <span class="hljs-attribute">height</span>: <span class="hljs-number">40px</span>;
+  <span class="hljs-attribute">border</span>: none;
+  <span class="hljs-attribute">background-color</span>: <span class="hljs-built_in">rgb</span>(<span class="hljs-number">21</span>, <span class="hljs-number">138</span>, <span class="hljs-number">1</span>);
+  <span class="hljs-attribute">color</span>: white;
+  <span class="hljs-attribute">text-transform</span>: uppercase;
+  <span class="hljs-attribute">font-size</span>: <span class="hljs-number">1em</span>;
+}
+<span class="hljs-selector-class">.subscribe-container</span> <span class="hljs-selector-tag">button</span><span class="hljs-selector-class">.disabled</span> {
+  <span class="hljs-attribute">background-color</span>: <span class="hljs-built_in">rgba</span>(<span class="hljs-number">21</span>, <span class="hljs-number">138</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0.5</span>);
+  <span class="hljs-attribute">color</span>: <span class="hljs-built_in">rgba</span>(<span class="hljs-number">255</span>, <span class="hljs-number">255</span>, <span class="hljs-number">255</span>, <span class="hljs-number">0.5</span>);
+}
+<span class="hljs-selector-class">.subscribe-container</span> <span class="hljs-selector-tag">button</span><span class="hljs-selector-pseudo">:active</span> {
+  <span class="hljs-attribute">background-color</span>: <span class="hljs-built_in">rgba</span>(<span class="hljs-number">21</span>, <span class="hljs-number">138</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0.5</span>);
+  <span class="hljs-attribute">color</span>: white;
+}
+
+<span class="hljs-comment">/* the chat stage */</span>
+<span class="hljs-selector-class">.chats-container</span> {
+  <span class="hljs-attribute">display</span>: flex;
+  <span class="hljs-attribute">flex-flow</span>: column nowrap;
+  <span class="hljs-attribute">width</span>: <span class="hljs-number">100%</span>;
+  <span class="hljs-attribute">height</span>: <span class="hljs-number">100%</span>;
+  <span class="hljs-attribute">justify-content</span>: space-between;
+}
+
+<span class="hljs-comment">/* chat header */</span>
+<span class="hljs-selector-class">.chats-container</span> &gt; <span class="hljs-selector-tag">header</span> {
+  <span class="hljs-attribute">display</span>: flex;
+  <span class="hljs-attribute">width</span>: <span class="hljs-number">100%</span>;
+  <span class="hljs-attribute">height</span>: <span class="hljs-number">50px</span>;
+  <span class="hljs-attribute">background-color</span>: <span class="hljs-built_in">rgb</span>(<span class="hljs-number">63</span>, <span class="hljs-number">81</span>, <span class="hljs-number">181</span>);
+  <span class="hljs-comment">/* justify-content: space-between; */</span>
+  <span class="hljs-attribute">align-items</span>: center;
+  <span class="hljs-attribute">padding</span>: <span class="hljs-number">0px</span> <span class="hljs-number">5px</span> <span class="hljs-number">0px</span> <span class="hljs-number">20px</span>;
+  <span class="hljs-attribute">color</span>: white;
+  <span class="hljs-attribute">box-sizing</span>: border-box;
+}
+<span class="hljs-selector-class">.chats-container</span> &gt; <span class="hljs-selector-tag">header</span> &gt; <span class="hljs-selector-tag">span</span> {
+  <span class="hljs-attribute">font-weight</span>: bold;
+  <span class="hljs-attribute">font-size</span>: <span class="hljs-number">1.1em</span>;
+  <span class="hljs-attribute">text-transform</span>: uppercase;
+}
+<span class="hljs-selector-class">.chats-container</span> &gt; <span class="hljs-selector-tag">header</span> &gt; small {
+  <span class="hljs-comment">/* position: relative; */</span>
+  <span class="hljs-comment">/* right: 30px; */</span>
+  <span class="hljs-attribute">margin-left</span>: <span class="hljs-number">10px</span>;
+  <span class="hljs-attribute">font-size</span>: <span class="hljs-number">0.7em</span>;
+  <span class="hljs-attribute">display</span>: flex;
+}
+<span class="hljs-selector-class">.chats-container</span> &gt; <span class="hljs-selector-tag">header</span> &gt; small <span class="hljs-selector-tag">ins</span> {
+  <span class="hljs-attribute">width</span>: <span class="hljs-number">5px</span>;
+  <span class="hljs-attribute">height</span>: <span class="hljs-number">5px</span>;
+  <span class="hljs-attribute">margin</span>: auto <span class="hljs-number">3px</span>;
+  <span class="hljs-attribute">content</span>: <span class="hljs-string">&quot;&quot;</span>;
+  <span class="hljs-attribute">flex-shrink</span>: <span class="hljs-number">0</span>;
+  <span class="hljs-attribute">display</span>: inline-block;
+  <span class="hljs-attribute">border-radius</span>: <span class="hljs-number">100%</span>;
+  <span class="hljs-attribute">background</span>: greenyellow;
+}
+<span class="hljs-selector-class">.chats-container</span> &gt; <span class="hljs-selector-tag">header</span> &gt; <span class="hljs-selector-tag">button</span> {
+  <span class="hljs-attribute">margin-left</span>: auto;
+  <span class="hljs-attribute">border</span>: none;
+  <span class="hljs-attribute">background</span>: transparent;
+  <span class="hljs-attribute">border-radius</span>: <span class="hljs-number">2px</span>;
+  <span class="hljs-attribute">font-size</span>: <span class="hljs-number">0.7em</span>;
+  <span class="hljs-attribute">color</span>: white;
+  <span class="hljs-attribute">text-transform</span>: uppercase;
+  <span class="hljs-attribute">padding</span>: <span class="hljs-number">10px</span>;
+  <span class="hljs-attribute">color</span>: red;
+}
+<span class="hljs-selector-class">.chats-container</span> &gt; <span class="hljs-selector-tag">header</span> &gt; <span class="hljs-selector-tag">button</span><span class="hljs-selector-pseudo">:hover</span> {
+  <span class="hljs-attribute">background-color</span>: <span class="hljs-built_in">rgba</span>(<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0.25</span>);
+}
+<span class="hljs-selector-class">.chats-container</span> &gt; <span class="hljs-selector-tag">header</span> &gt; <span class="hljs-selector-tag">button</span><span class="hljs-selector-pseudo">:active</span> {
+  <span class="hljs-attribute">color</span>: white;
+  <span class="hljs-attribute">background</span>: red <span class="hljs-meta">!important</span>;
+}
+
+<span class="hljs-comment">/* chat footer */</span>
+<span class="hljs-selector-class">.chats-container</span> &gt; <span class="hljs-selector-tag">footer</span> {
+  <span class="hljs-attribute">display</span>: flex;
+  <span class="hljs-attribute">width</span>: <span class="hljs-built_in">calc</span>(<span class="hljs-number">100%</span> - <span class="hljs-number">8px</span>);
+  <span class="hljs-attribute">height</span>: <span class="hljs-number">50px</span>;
+  <span class="hljs-attribute">flex-shrink</span>: <span class="hljs-number">0</span>;
+  <span class="hljs-attribute">justify-content</span>: space-between;
+  <span class="hljs-attribute">align-items</span>: center;
+  <span class="hljs-attribute">color</span>: white;
+  <span class="hljs-attribute">margin</span>: <span class="hljs-number">0px</span> <span class="hljs-number">2px</span> <span class="hljs-number">2px</span> <span class="hljs-number">2px</span>;
+  <span class="hljs-attribute">padding</span>: <span class="hljs-number">0px</span>;
+  <span class="hljs-attribute">border</span>: <span class="hljs-number">2px</span> solid <span class="hljs-built_in">rgb</span>(<span class="hljs-number">63</span>, <span class="hljs-number">81</span>, <span class="hljs-number">181</span>);
+  <span class="hljs-attribute">border-radius</span>: <span class="hljs-number">50px</span>;
+  <span class="hljs-attribute">overflow</span>: hidden;
+  <span class="hljs-attribute">position</span>: relative;
+  <span class="hljs-attribute">outline</span>: none;
+  <span class="hljs-attribute">bottom</span>: <span class="hljs-number">0px</span>;
+  <span class="hljs-attribute">position</span>: fixed;
+}
+<span class="hljs-selector-class">.chats-container</span> &gt; <span class="hljs-selector-tag">footer</span> * {
+  <span class="hljs-attribute">border</span>: none;
+}
+<span class="hljs-selector-class">.chats-container</span> &gt; <span class="hljs-selector-tag">footer</span> <span class="hljs-selector-id">#message</span> {
+  <span class="hljs-attribute">background</span>: white;
+  <span class="hljs-attribute">width</span>: <span class="hljs-number">100%</span>;
+  <span class="hljs-attribute">max-width</span>: <span class="hljs-built_in">calc</span>(<span class="hljs-number">100%</span> - <span class="hljs-number">80px</span>);
+  <span class="hljs-attribute">height</span>: <span class="hljs-number">100%</span>;
+  <span class="hljs-attribute">padding</span>: <span class="hljs-number">18px</span> <span class="hljs-number">15px</span>;
+  <span class="hljs-attribute">font-family</span>: <span class="hljs-string">&quot;Gill Sans&quot;</span>, <span class="hljs-string">&quot;Gill Sans MT&quot;</span>, Calibri, <span class="hljs-string">&quot;Trebuchet MS&quot;</span>, sans-serif;
+  <span class="hljs-attribute">box-sizing</span>: border-box;
+}
+<span class="hljs-selector-class">.chats-container</span> &gt; <span class="hljs-selector-tag">footer</span> <span class="hljs-selector-id">#message</span>::-webkit-scrollbar {
+  display: none;
+}
+<span class="hljs-selector-id">#message</span>,
+<span class="hljs-selector-id">#message</span><span class="hljs-selector-pseudo">:focus</span> {
+  <span class="hljs-attribute">outline</span>: none <span class="hljs-meta">!important</span>;
+}
+<span class="hljs-selector-class">.chats-container</span> &gt; <span class="hljs-selector-tag">footer</span> <span class="hljs-selector-tag">button</span> {
+  <span class="hljs-attribute">flex-shrink</span>: <span class="hljs-number">0</span>;
+  <span class="hljs-attribute">height</span>: <span class="hljs-number">46px</span>;
+  <span class="hljs-attribute">width</span>: <span class="hljs-number">80px</span>;
+  <span class="hljs-attribute">margin</span>: auto <span class="hljs-number">2px</span>;
+  <span class="hljs-attribute">background</span>: <span class="hljs-built_in">rgb</span>(<span class="hljs-number">63</span>, <span class="hljs-number">81</span>, <span class="hljs-number">181</span>);
+  <span class="hljs-attribute">color</span>: white;
+  <span class="hljs-attribute">border-radius</span>: <span class="hljs-number">50px</span>;
+  <span class="hljs-attribute">border</span>: <span class="hljs-number">0px</span>;
+  <span class="hljs-attribute">font-weight</span>: bold;
+  <span class="hljs-attribute">text-transform</span>: uppercase;
+}
+
+<span class="hljs-comment">/* main chats box */</span>
+<span class="hljs-selector-class">.chats-container</span> <span class="hljs-selector-class">.chats-box</span> {
+  <span class="hljs-attribute">flex-grow</span>: <span class="hljs-number">1</span>;
+  <span class="hljs-attribute">width</span>: <span class="hljs-number">100%</span>;
+  <span class="hljs-attribute">max-height</span>: <span class="hljs-built_in">calc</span>(<span class="hljs-number">100%</span> - <span class="hljs-number">108px</span>);
+  <span class="hljs-attribute">display</span>: flex;
+  <span class="hljs-attribute">overflow</span>: hidden;
+  <span class="hljs-attribute">overflow-y</span>: scroll;
+  <span class="hljs-attribute">position</span>: fixed;
+  <span class="hljs-attribute">top</span>: <span class="hljs-number">50px</span>;
+  <span class="hljs-attribute">margin</span>: <span class="hljs-number">0px</span>;
+  <span class="hljs-attribute">flex-flow</span>: column nowrap;
+  <span class="hljs-attribute">box-sizing</span>: border-box;
+  <span class="hljs-attribute">padding</span>: <span class="hljs-number">5px</span> <span class="hljs-number">0px</span>;
+  <span class="hljs-attribute">margin-right</span>: <span class="hljs-number">40px</span>;
+}
+<span class="hljs-selector-class">.chats-container</span> <span class="hljs-selector-class">.chats-box</span>::-webkit-scrollbar {
+  display: none;
+}
+<span class="hljs-selector-class">.chats-box</span> <span class="hljs-selector-class">.chat-item</span> {
+  <span class="hljs-attribute">width</span>: <span class="hljs-number">100%</span>;
+  <span class="hljs-attribute">display</span>: flex;
+  <span class="hljs-attribute">box-sizing</span>: border-box;
+  <span class="hljs-attribute">padding</span>: <span class="hljs-number">0px</span> <span class="hljs-number">5px</span>;
+  <span class="hljs-attribute">justify-content</span>: space-between;
+}
+<span class="hljs-selector-class">.chats-box</span> <span class="hljs-selector-class">.chat-item</span><span class="hljs-selector-pseudo">:not</span>(<span class="hljs-selector-pseudo">:last-of-type</span>) {
+  <span class="hljs-attribute">margin-bottom</span>: <span class="hljs-number">3px</span>;
+}
+<span class="hljs-selector-class">.chats-box</span> <span class="hljs-selector-class">.chat-item</span><span class="hljs-selector-class">.selected</span> {
+  <span class="hljs-attribute">background</span>: <span class="hljs-built_in">rgba</span>(<span class="hljs-number">63</span>, <span class="hljs-number">81</span>, <span class="hljs-number">181</span>, <span class="hljs-number">0.15</span>);
+  <span class="hljs-attribute">padding</span>: <span class="hljs-number">2px</span> <span class="hljs-number">5px</span>;
+}
+<span class="hljs-selector-class">.chat-item</span> <span class="hljs-selector-class">.chat-item-content</span> {
+  <span class="hljs-attribute">position</span>: relative;
+  <span class="hljs-attribute">z-index</span>: <span class="hljs-number">2</span>;
+  <span class="hljs-attribute">max-width</span>: <span class="hljs-number">400px</span>;
+  <span class="hljs-attribute">min-width</span>: <span class="hljs-number">150px</span>;
+  <span class="hljs-attribute">min-height</span>: <span class="hljs-number">40px</span>;
+  <span class="hljs-attribute">display</span>: flex;
+  <span class="hljs-attribute">flex-flow</span>: column nowrap;
+  <span class="hljs-attribute">border-radius</span>: <span class="hljs-number">20px</span>;
+  <span class="hljs-attribute">background</span>: <span class="hljs-built_in">rgb</span>(<span class="hljs-number">60</span>, <span class="hljs-number">111</span>, <span class="hljs-number">238</span>);
+  <span class="hljs-attribute">color</span>: white;
+  <span class="hljs-attribute">padding</span>: <span class="hljs-number">0px</span> <span class="hljs-number">8px</span> <span class="hljs-number">8px</span> <span class="hljs-number">8px</span>;
+  <span class="hljs-attribute">box-sizing</span>: border-box;
+  <span class="hljs-attribute">font-family</span>: Ubuntu, Arial, Helvetica, sans-serif;
+}
+<span class="hljs-selector-class">.chat-item</span><span class="hljs-selector-class">.out</span> <span class="hljs-selector-class">.chat-item-content</span> {
+  <span class="hljs-attribute">order</span>: <span class="hljs-number">1</span>;
+  <span class="hljs-attribute">background</span>: <span class="hljs-built_in">rgb</span>(<span class="hljs-number">21</span>, <span class="hljs-number">138</span>, <span class="hljs-number">1</span>);
+}
+<span class="hljs-selector-class">.chat-item</span> <span class="hljs-selector-class">.chat-item-content</span><span class="hljs-selector-pseudo">::after</span> {
+  <span class="hljs-attribute">content</span>: <span class="hljs-string">&quot; &quot;</span>;
+  <span class="hljs-attribute">position</span>: absolute;
+  <span class="hljs-attribute">z-index</span>: <span class="hljs-number">1</span>;
+  <span class="hljs-attribute">bottom</span>: <span class="hljs-number">0px</span>;
+  <span class="hljs-attribute">left</span>: <span class="hljs-number">0px</span>;
+  <span class="hljs-attribute">background</span>: inherit;
+  <span class="hljs-attribute">padding</span>: <span class="hljs-number">6px</span>;
+  <span class="hljs-attribute">border-radius</span>: <span class="hljs-number">50%</span>;
+}
+<span class="hljs-selector-class">.chat-item</span><span class="hljs-selector-class">.out</span> <span class="hljs-selector-class">.chat-item-content</span><span class="hljs-selector-pseudo">::after</span> {
+  <span class="hljs-attribute">left</span>: auto;
+  <span class="hljs-attribute">right</span>: <span class="hljs-number">0px</span>;
+}
+<span class="hljs-selector-class">.chat-item-content</span> <span class="hljs-selector-class">.username</span> {
+  <span class="hljs-attribute">font-size</span>: <span class="hljs-number">0.7em</span>;
+  <span class="hljs-attribute">width</span>: <span class="hljs-number">100%</span>;
+  <span class="hljs-attribute">position</span>: relative;
+  <span class="hljs-attribute">left</span>: <span class="hljs-number">15px</span>;
+  <span class="hljs-attribute">right</span>: auto;
+  <span class="hljs-attribute">top</span>: <span class="hljs-number">3px</span>;
+  <span class="hljs-attribute">display</span>: block;
+  <span class="hljs-comment">/* text-align: right; */</span>
+  <span class="hljs-comment">/* margin: auto 5px auto 15px; */</span>
+  <span class="hljs-attribute">justify-content</span>: space-between;
+  <span class="hljs-comment">/*  */</span>
+  <span class="hljs-attribute">color</span>: <span class="hljs-built_in">rgb</span>(<span class="hljs-number">179</span> <span class="hljs-number">249</span> <span class="hljs-number">167</span>);
+}
+<span class="hljs-selector-class">.chat-item</span><span class="hljs-selector-class">.out</span> <span class="hljs-selector-class">.chat-item-content</span> <span class="hljs-selector-class">.username</span> {
+  <span class="hljs-attribute">box-sizing</span>: border-box;
+  <span class="hljs-comment">/* background: white; */</span>
+  <span class="hljs-attribute">text-align</span>: right;
+  <span class="hljs-attribute">right</span>: <span class="hljs-number">18px</span>;
+  <span class="hljs-attribute">left</span>: auto;
+}
+<span class="hljs-selector-class">.chat-item-content</span> <span class="hljs-selector-class">.chat-message</span> {
+  <span class="hljs-attribute">margin-top</span>: <span class="hljs-number">3px</span>;
+  <span class="hljs-attribute">width</span>: auto;
+  <span class="hljs-attribute">max-width</span>: <span class="hljs-number">100%</span>;
+  <span class="hljs-comment">/*  */</span>
+  <span class="hljs-attribute">word-wrap</span>: break-word;
+  <span class="hljs-attribute">white-space</span>: pre-line;
+}
+<span class="hljs-selector-class">.chat-item</span><span class="hljs-selector-class">.out</span> <span class="hljs-selector-class">.chat-item-content</span> <span class="hljs-selector-class">.chat-message</span> {
+  <span class="hljs-attribute">text-align</span>: right;
+}
+<span class="hljs-selector-class">.chat-item</span> <span class="hljs-selector-class">.timestamp</span> {
+  <span class="hljs-attribute">height</span>: <span class="hljs-number">100%</span>;
+  <span class="hljs-attribute">display</span>: flex;
+  <span class="hljs-attribute">flex-direction</span>: column;
+  <span class="hljs-attribute">justify-content</span>: center;
+  <span class="hljs-attribute">font-size</span>: <span class="hljs-number">0.7em</span>;
+  <span class="hljs-attribute">color</span>: black;
+  <span class="hljs-attribute">margin</span>: auto <span class="hljs-number">20px</span>;
+  <span class="hljs-attribute">text-transform</span>: uppercase;
+  <span class="hljs-attribute">font-weight</span>: bold;
+  <span class="hljs-attribute">visibility</span>: hidden;
+}
+<span class="hljs-selector-class">.chats-box</span> <span class="hljs-selector-class">.chat-item</span><span class="hljs-selector-class">.selected</span> <span class="hljs-selector-class">.timestamp</span> {
+  <span class="hljs-attribute">visibility</span>: visible;
+}
+<span class="hljs-selector-class">.chat-item</span> <span class="hljs-selector-class">.timestamp</span> * {
+  <span class="hljs-attribute">display</span>: block;
+}
+</div></code></pre>
+<blockquote>
+<p>That's All!</p>
+</blockquote>
+<h2 id="results-">Results <a name="results"></a></h2>
+<p><strong>Here's our chat app:</strong>
+<img src="file:///c:\Users\USER\code\misc\Hacktoberfest-2022\pusher-vue\article\img\two-screens_enhanced.png" alt="Group Selection Menu - Screenshot"></p>
+<h2 id="conclusion">Conclusion</h2>
+<p>This article has taken you through the basic steps required to create a fast, scalable, real-time group-chat application with Vue and Pusher.</p>
+<p>Check out the <a href="https://github.com/Leigh-Ola/group-chat-app">project repo on GitHub</a>. Feel free to fork and contribute.</p>
+<p>👋</p>
+
+        <script async src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>
+        
+    </body>
+    </html>
