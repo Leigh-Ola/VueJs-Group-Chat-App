@@ -55,6 +55,7 @@ Click on **Create App** to continue.
 To use Pusher channels, you need App Keys for your app.
 - Head over to the **App Keys** section on your Pusher App dashboard.
 - Copy your `app_id`, `key`, `secret` and `cluster`. 
+
 ### Step 3: Enabling subscription counting. <a name="subscription-counting"></a>
 [Subscription count](https://blog.pusher.com/counting-live-users-at-scale-with-subscription-count-events/) is an in-built pusher event that lets you know how many clients are connected to a single channel.
 
@@ -149,6 +150,7 @@ Next, create a `/public` in your server directory and in it, create the followin
 - `index.HTML`
 - `index.css`
 - `index.js`
+
 ### Creating a Vue instance and connecting to Pusher <a name="instantiating"></a>
 Open up the `index.js` file and add the following code:
 ```javascript
