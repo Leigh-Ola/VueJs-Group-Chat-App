@@ -1,6 +1,9 @@
-# Implementing speedy group chat functionality with Pusher and Vue.
+## Implementing speedy group chat functionality with Pusher and Vue.
 
-{% details What is Pusher? %} [Pusher](https://www.pusher.com) is a tool that enables you to build scalable real-time communication. Fast. {% enddetails %}
+{% details What is Pusher? %} [Pusher](https://www.pusher.com) is a tool that enables you to build scalable real-time communication. Fast.
+
+Pusher is used by industry giants such as [The Washington Post](https://www.washingtonpost.com/), [DoorDash](https://www.doordash.com/) and [MailChimp](https://mailchimp.com/) 
+ {% enddetails %}
 
 ## Table Of Contents
   * [Features](#features)
