@@ -11,7 +11,9 @@ app.use(express.json());
 app.use(cors());
 
 // define a route handler for the default home page
-app.get("/", (req, res) => {
+app.use(express.static("../pusher-vue"));
+
+app.get("/test", (req, res) => {
   res.send("Running Pusher group chat app server");
 });
 

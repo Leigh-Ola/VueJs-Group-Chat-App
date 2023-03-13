@@ -9,7 +9,8 @@ var app = new Vue({
       connectionState: null,
       stage: "subscribe", // subscribe or chat
       //
-      username: "Monseur",
+      username: "",
+      // username: "Monseur",
       usernamePlaceholder: "Username",
       currentChannel: "", // "Programming", // remove this
       onlineUsersCount: 1,
